@@ -16,21 +16,11 @@ export class ClaudeService implements OnModuleInit {
     this.anthropic = new Anthropic({ apiKey });
   }
 
-  async streamChatCompletion(messages: any[]) {
-    const stream = await this.anthropic.messages.create({
+  async streamChatCompletion(messages: Anthropic.MessageParam[]) {
+    return this.anthropic.messages.stream({
+      messages: messages,
       model: 'claude-3-sonnet-20240229',
       max_tokens: 1024,
-      messages: this.formatMessages(messages),
-      stream: true,
     });
-
-    return stream;
-  }
-
-  private formatMessages(messages: any[]): Anthropic.MessageParam[] {
-    return messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content,
-    }));
   }
 }

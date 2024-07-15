@@ -17,6 +17,7 @@ import { CriteriaExample } from './database/entities/CriteriaExample.entity';
 import { Feedback } from './database/entities/Feedback.entity';
 import { StudentSubmission } from './database/entities/StudentSubmission.entity';
 import { UserModule } from './modules/user/user.module';
+import { MyGateway } from './gateway/gateway';
 
 
 
@@ -41,6 +42,6 @@ import { UserModule } from './modules/user/user.module';
     UserModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MyGateway],
 })
 export class AppModule {}
