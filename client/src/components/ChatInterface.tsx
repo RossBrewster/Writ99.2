@@ -14,11 +14,7 @@ export const ChatInterface: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const addMessage = useCallback((message: Message) => {
-    setMessages(prev => {
-      console.log('Adding message:', message);
-      console.log('Previous messages:', prev);
-      return [...prev, message];
-    });
+    setMessages(prev => [...prev, message]);
   }, []);
 
   useEffect(() => {
@@ -28,27 +24,21 @@ export const ChatInterface: React.FC = () => {
     setSocket(newSocket);
 
     newSocket.on('messageStart', (data: { role: string }) => {
-      console.log('Message start:', data);
       setCurrentMessage({ role: data.role, content: '' });
     });
 
     newSocket.on('contentDelta', (data: { text: string }) => {
-      console.log('Content delta:', data);
       setCurrentMessage(prev => {
         if (prev) {
-          const updated = { ...prev, content: prev.content + data.text };
-          console.log('Updated current message:', updated);
-          return updated;
+          return { ...prev, content: prev.content + data.text };
         }
         return null;
       });
     });
 
     newSocket.on('messageComplete', () => {
-      console.log('Message complete');
       setCurrentMessage(prev => {
         if (prev) {
-          console.log('Completing message:', prev);
           addMessage(prev);
           return null;
         }
@@ -66,30 +56,28 @@ export const ChatInterface: React.FC = () => {
   }, [addMessage]);
 
   useEffect(() => {
-    console.log('Messages updated:', messages);
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  useEffect(() => {
-    console.log('Current message updated:', currentMessage);
-  }, [currentMessage]);
+  }, [messages, currentMessage]);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && socket) {
       const userMessage: Message = { role: 'user', content: input };
       addMessage(userMessage);
-      socket.emit('sendMessage', input);
+      
+      // Send the entire message history to the server
+      socket.emit('sendMessage', { messages: [...messages, userMessage] });
+      
       setInput('');
     }
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-screen justify-end w-[800px]">
+      <div className="overflow-y-auto p-4 space-y-4 h-auto mt-0">
         {messages.map((message, index) => (
           <div key={index} className={`${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-            <div className={`inline-block p-2 rounded-lg ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+            <div className={`inline-block pt-2 pb-2 pl-4 pr-4 rounded-lg ${message.role === 'user' ? 'bg-blue-500 text-white max-w-[700px]' : 'bg-gray-200 text-black'}`}>
               {message.content}
             </div>
           </div>
