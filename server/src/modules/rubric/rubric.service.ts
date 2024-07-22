@@ -63,7 +63,20 @@ export class RubricService {
     if (!criteria) {
       throw new NotFoundException(`Rubric criteria with ID ${id} not found`);
     }
-    return await this.rubricCriteriaRepository.update(id, updateRubricCriteriaDto);
+
+    if (updateRubricCriteriaDto.templateId !== undefined) {
+      await this.rubricCriteriaRepository.setTemplate(id, updateRubricCriteriaDto.templateId);
+    }
+
+    const updateData = { ...updateRubricCriteriaDto };
+    delete updateData.templateId;
+
+    if (Object.keys(updateData).length > 0) {
+      await this.rubricCriteriaRepository.update(id, updateData);
+    }
+
+    // Fetch and return the updated criteria
+    return await this.rubricCriteriaRepository.findById(id, ['template']);
   }
 
   async deleteCriteria(id: number) {
@@ -74,6 +87,10 @@ export class RubricService {
     await this.rubricCriteriaRepository.delete(id);
   }
 
+    async setCriteriaTemplate(criteriaId: number, templateId: number) {
+        return await this.rubricCriteriaRepository.setTemplate(criteriaId, templateId);
+    }
+
   async findCriteriaForTemplate(templateId: number) {
     const template = await this.rubricTemplateRepository.findById(templateId);
     if (!template) {
@@ -81,4 +98,6 @@ export class RubricService {
     }
     return await this.rubricCriteriaRepository.findByTemplateId(templateId);
   }
+
+  
 }

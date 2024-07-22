@@ -65,4 +65,9 @@ export class RubricController {
   async findCriteriaForTemplate(@Param('id') id: string) {
     return await this.rubricService.findCriteriaForTemplate(+id);
   }
+
+  @Put('criteria/:id/template')
+  async setCriteriaTemplate(@Param('id') id: string, @Body('templateId') templateId: number) {
+    return await this.rubricService.setCriteriaTemplate(+id, templateId);
+}
 }

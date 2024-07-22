@@ -43,6 +43,7 @@ export class CreateRubricCriteriaDto {
     templateId: number;
 }
   
+
 export class UpdateRubricCriteriaDto {
     @IsOptional()
     @IsString()
@@ -56,4 +57,9 @@ export class UpdateRubricCriteriaDto {
     @IsNumber()
     @Type(() => Number)
     maxScore?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    templateId?: number;
 }

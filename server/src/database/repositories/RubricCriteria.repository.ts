@@ -21,8 +21,27 @@ export class RubricCriteriaRepository {
   }
 
   async findById(id: number, relations: string[] = []): Promise<RubricCriteria | undefined> {
-    return await this.rubricCriteriaRepository.findOne({ where: { id }, relations });
+    return await this.rubricCriteriaRepository.findOne({
+      where: { id },
+      relations,
+    });
   }
+
+  async setTemplate(criteriaId: number, templateId: number): Promise<RubricCriteria> {
+    const criteria = await this.findById(criteriaId);
+    if (!criteria) {
+      throw new Error('RubricCriteria not found');
+    }
+
+    const template = await this.rubricCriteriaRepository.manager.findOne(RubricTemplate, { where: { id: templateId } });
+    if (!template) {
+      throw new Error('RubricTemplate not found');
+    }
+
+    criteria.template = template;
+    return await this.rubricCriteriaRepository.save(criteria);
+  }
+
 
   async update(id: number, criteriaData: Partial<RubricCriteria>): Promise<RubricCriteria | undefined> {
     await this.rubricCriteriaRepository.update(id, criteriaData);
