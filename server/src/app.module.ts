@@ -20,6 +20,8 @@ import { UserModule } from './modules/user/user.module';
 import { MyGateway } from './gateway/gateway';
 import { databaseConfig } from './config/database.config';
 import { RubricModule } from './modules/rubric/rubric.module';
+import { AssignmentModule } from './modules/assignment/assignment.module';
+import { SubmissionModule } from './modules/submission/submission.module';
 
 
 
@@ -33,7 +35,9 @@ import { RubricModule } from './modules/rubric/rubric.module';
     OpenAiModule,
     ClaudeModule,
     UserModule,
-    RubricModule
+    RubricModule,
+    AssignmentModule,
+    SubmissionModule
   ],
   controllers: [AppController],
   providers: [AppService, MyGateway],
