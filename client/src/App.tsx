@@ -1,10 +1,12 @@
-import { ChatInterface } from './components/ChatInterface'
-import './App.css'
+// import { ChatInterface } from './components/ChatInterface'
+import { HomePage } from './components/home/HomePage';
+import './App.css';
 
 function App() {
 
   return (
-    <ChatInterface ></ChatInterface>
+    // <ChatInterface ></ChatInterface>
+    <HomePage />
   )
 }
 

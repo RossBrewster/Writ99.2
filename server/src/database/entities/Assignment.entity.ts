@@ -12,6 +12,9 @@ export class Assignment {
     @Column()
     title: string;
 
+    @Column()
+    prompt: string;
+
     @Column("text")
     description: string;
 

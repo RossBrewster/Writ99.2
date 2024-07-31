@@ -18,6 +18,6 @@ export const databaseConfig: TypeOrmModuleOptions = {
   password: '',
   database: 'writ99',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  synchronize: true,
+  synchronize: false,
   logging: true,
 };

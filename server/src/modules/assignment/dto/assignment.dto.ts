@@ -2,15 +2,23 @@
 export class CreateAssignmentDto {
     title: string;
     description: string;
-    passage: string;
+    instructions: string;
+    readingMaterial?: string;
     prompt: string;
+    minimumDrafts: number;
     dueDate: Date;
-    // Add other necessary fields
+    createdById?: number;
+    classroomId?: number;
   }
   
   export class UpdateAssignmentDto {
     title?: string;
     description?: string;
+    instructions?: string;
+    readingMaterial?: string;
+    prompt?: string;
+    minimumDrafts?: number;
     dueDate?: Date;
-    // Add other necessary fields
+    createdById?: number;
+    classroomId?: number;
   }
