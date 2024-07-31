@@ -22,6 +22,7 @@ import { databaseConfig } from './config/database.config';
 import { RubricModule } from './modules/rubric/rubric.module';
 import { AssignmentModule } from './modules/assignment/assignment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 
@@ -37,7 +38,8 @@ import { SubmissionModule } from './modules/submission/submission.module';
     UserModule,
     RubricModule,
     AssignmentModule,
-    SubmissionModule
+    SubmissionModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService, MyGateway],
