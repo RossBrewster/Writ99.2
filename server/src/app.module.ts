@@ -17,30 +17,31 @@ import { CriteriaExample } from './database/entities/CriteriaExample.entity';
 import { Feedback } from './database/entities/Feedback.entity';
 import { StudentSubmission } from './database/entities/StudentSubmission.entity';
 import { UserModule } from './modules/user/user.module';
+import { MyGateway } from './gateway/gateway';
+import { databaseConfig } from './config/database.config';
+import { RubricModule } from './modules/rubric/rubric.module';
+import { AssignmentModule } from './modules/assignment/assignment.module';
+import { SubmissionModule } from './modules/submission/submission.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'rossbrewster',
-      password: '',
-      database: 'crisis-management',
-      entities: [User, Classroom, Assignment, RubricTemplate, RubricCriteria, RubricVersion, CriteriaExample, Feedback, StudentSubmission],
-      synchronize: true, // Be cautious with this in production
-    }),
+    TypeOrmModule.forRoot(databaseConfig),
     ConfigModule.forRoot({
       envFilePath: join(__dirname, '..', '.env'),
       isGlobal: true,
     }),
     OpenAiModule,
     ClaudeModule,
-    UserModule
+    UserModule,
+    RubricModule,
+    AssignmentModule,
+    SubmissionModule,
+    AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MyGateway],
 })
 export class AppModule {}

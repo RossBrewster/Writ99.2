@@ -12,6 +12,7 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB, // This should now be 'crisis-management'
   entities: ['src/**/*.entity.ts'],
   migrations: ['src/database/migrations/*.ts'],
+  migrationsRun: true,
   synchronize: false,
   logging: process.env.NODE_ENV !== 'production',
 });

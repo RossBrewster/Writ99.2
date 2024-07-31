@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from "typeorm";
 import { Assignment } from "./Assignment.entity";
 import { User } from "./User.entity";
 import { Feedback } from "./Feedback.entity";
@@ -8,11 +8,17 @@ export class StudentSubmission {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Assignment, assignment => assignment.submissions)
+    @ManyToOne(() => Assignment, assignment => assignment.submissions, { nullable: false })
     assignment: Assignment;
+
+    @Column({ nullable: false })
+    assignmentId: number;
 
     @ManyToOne(() => User)
     student: User;
+
+    @Column()
+    studentId: number;
 
     @Column()
     draftNumber: number;
@@ -20,7 +26,7 @@ export class StudentSubmission {
     @Column("text")
     content: string;
 
-    @Column()
+    @CreateDateColumn()
     submissionDate: Date;
 
     @OneToMany(() => Feedback, feedback => feedback.submission)

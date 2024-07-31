@@ -2,6 +2,11 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 
+interface Message {
+  role: string;
+  content: string | { type: string; text?: string }[];
+}
+
 @Injectable()
 export class ClaudeService implements OnModuleInit {
   private anthropic: Anthropic;
@@ -16,9 +21,9 @@ export class ClaudeService implements OnModuleInit {
     this.anthropic = new Anthropic({ apiKey });
   }
 
-  async streamChatCompletion(messages: any[]) {
+  async streamChatCompletion(messages: Message[]) {
     const stream = await this.anthropic.messages.create({
-      model: 'claude-3-sonnet-20240229',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 1024,
       messages: this.formatMessages(messages),
       stream: true,
@@ -27,10 +32,14 @@ export class ClaudeService implements OnModuleInit {
     return stream;
   }
 
-  private formatMessages(messages: any[]): Anthropic.MessageParam[] {
+  private formatMessages(messages: Message[]): Anthropic.MessageParam[] {
     return messages.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content,
+      content: typeof msg.content === 'string' ? msg.content : this.formatContent(msg.content),
     }));
+  }
+
+  private formatContent(content: { type: string; text?: string }[]): string {
+    return content.map(block => block.text || '').join(' ');
   }
 }
