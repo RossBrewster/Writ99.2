@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { DarkModeToggle } from '../home/DarkModeToggle';
 import { useDarkMode } from '../home/hooks/useDarkMode';
+import { AnimatedLogo } from '../shared/BlankLogo';
 
 export const SignUpPage: React.FC = () => {
-  const { isDarkMode } = useDarkMode();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,7 +48,9 @@ export const SignUpPage: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
+      <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       <div className="max-w-md w-full space-y-8">
+        <AnimatedLogo />
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold font-['Saira',_sans-serif]">
             Create your account
