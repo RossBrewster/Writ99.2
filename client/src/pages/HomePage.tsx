@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { DarkModeToggle } from './DarkModeToggle';
-import { Logo } from './Logo';
-import { TypedText } from './TypedText';
-import { useDarkMode } from './hooks/useDarkMode';
-import { ButtonData } from './types';
+import { DarkModeToggle } from '../components/shared/DarkModeToggle';
+import { Logo } from '../components/shared/Logo';
+import { TypedText } from '../components/TypedText';
+import { useDarkMode } from '../hooks/useDarkMode';
+import { ButtonData } from '../types/types';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [isLogoAnimationComplete, setIsLogoAnimationComplete] = useState(false);
   const [isAboutUsVisible, setIsAboutUsVisible] = useState(false);
@@ -42,9 +44,10 @@ At Writ99, we believe in the power of technology to create inclusive and individ
         break;
       case 'Students':
       case 'Teachers':
+        navigate('/login', { state: { userType: buttonText.toLowerCase() } });
+        break;
       case 'Sign Up':
-        console.log(`Button clicked: ${buttonText}`);
-        // Add sign up or login action here later
+        navigate('/register');
         break;
       default:
         console.log(`Button clicked: ${buttonText}`);

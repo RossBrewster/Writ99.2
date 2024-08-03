@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { DarkModeToggle } from '../home/DarkModeToggle';
-import { useDarkMode } from '../home/hooks/useDarkMode';
-import { AnimatedLogo } from '../shared/BlankLogo';
+import { DarkModeToggle } from '../components/shared/DarkModeToggle';
+import { useDarkMode } from '../hooks/useDarkMode';
+import { AnimatedLogo } from '../components/shared/BlankLogo';
+import { useNavigate } from 'react-router-dom';
+
+interface UserResponse {
+    id: number;
+    username: string;
+    email: string;
+    role: 'student' | 'teacher' | 'admin';
+  }
 
 export const SignUpPage: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -11,10 +19,14 @@ export const SignUpPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('student');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
     if (password !== confirmPassword) {
       setError("Passwords don't match");
@@ -22,7 +34,7 @@ export const SignUpPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/auth/register', {  // Updated this line
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +47,11 @@ export const SignUpPage: React.FC = () => {
         throw new Error(errorData.message || 'Registration failed');
       }
 
-      console.log('Registration successful');
+      const userData: UserResponse = await response.json();
+      console.log('Registration successful', userData);
+      setSuccessMessage(`Account created successfully for ${userData.username}`);
+      // Here you might want to redirect the user or update app state
+      navigate('/login');
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -148,6 +164,9 @@ export const SignUpPage: React.FC = () => {
 
           {error && (
             <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
+          {successMessage && (
+            <div className="text-green-500 text-sm text-center">{successMessage}</div>
           )}
 
           <div>

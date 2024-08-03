@@ -5,7 +5,7 @@ import React, {
     useMemo,
     useCallback,
   } from 'react';
-  import { ButtonData } from './types';
+  import { ButtonData } from '../../types/types';
   
   interface LogoProps {
     onButtonClick: (buttonText: string) => void;
