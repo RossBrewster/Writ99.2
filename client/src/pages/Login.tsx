@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DarkModeToggle } from '../components/shared/DarkModeToggle';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { AnimatedLogo } from '../components/shared/BlankLogo';
+import { Logo } from '../components/shared/BlankLogo';
 import { useAuth } from '../contexts/AuthContext';
-
-// interface UserResponse {
-//   id: number;
-//   username: string;
-//   email: string;
-//   role: 'student' | 'teacher' | 'admin';
-// }
+import { ButtonData } from '../types/types';
 
 export const LoginPage: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -50,7 +44,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-
   const inputClasses = `
     appearance-none rounded-none relative block w-full px-3 py-2 border
     ${isDarkMode 
@@ -60,17 +53,25 @@ export const LoginPage: React.FC = () => {
     focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm
   `;
 
+  const logoButtons: ButtonData[] = [
+    { text: 'Teachers', color: '#EA4335' },
+    { text: 'Students', color: '#34A853' },
+    { text: 'Sign Up', color: '#FBBC05' },
+    { text: 'About Us', color: '#4285F4' },
+  ];
+
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
+    <div className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} font-sans`}>
       <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-      <div className="max-w-md w-full space-y-8">
-        <AnimatedLogo />
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold font-['Saira',_sans-serif]">
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+        <div className="w-full flex justify-center mb-8">
+        <Logo buttons={logoButtons}/>
+        </div>
+        <div className="w-full max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
             Sign in to your account
           </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">Email address</label>
@@ -117,7 +118,8 @@ export const LoginPage: React.FC = () => {
               Sign in
             </button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

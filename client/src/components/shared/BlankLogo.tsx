@@ -1,7 +1,13 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 
-export const AnimatedLogo: React.FC = () => {
+interface LogoProps {
+  buttons: { color: string }[];
+}
+
+export const Logo: React.FC<LogoProps> = ({ buttons }) => {
   const logoRef = useRef<SVGSVGElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const wPaths = useMemo(
     () => [
@@ -22,7 +28,53 @@ export const AnimatedLogo: React.FC = () => {
     []
   );
 
-  const colors = ['#EA4335', '#34A853', '#FBBC05', '#4285F4']; // Google colors: Red, Green, Yellow, Blue
+  const { scale } = useSpring({
+    from: { scale: 2.5 },
+    to: async (next) => {
+      if (!hasAnimated) {
+        await next({ scale: 1.5 });
+        await new Promise(resolve => setTimeout(resolve, 0)); // Adjust timing as needed
+        await next({ scale: 0.5 });
+        setHasAnimated(true);
+      }
+    },
+    config: { tension: 300, friction: 10 },
+  });
+
+  useEffect(() => {
+    if (!logoRef.current || hasAnimated) return;
+    const paths = logoRef.current.querySelectorAll('path');
+
+    paths.forEach((path, index) => {
+      animatePath(path, hamburgerPaths[index], wPaths[index], 800, index * 50);
+    });
+  }, [hasAnimated]);
+
+  const animatePath = (
+    element: SVGPathElement,
+    startPath: number[],
+    endPath: number[],
+    duration: number,
+    delay: number
+  ): void => {
+    const startTime = performance.now();
+    setTimeout(() => {
+      function animate(time: number) {
+        const progress = Math.min((time - startTime) / duration, 1);
+        if (progress < 1) {
+          const easedProgress = easeInOutBack(progress);
+          const currentPath = startPath.map(
+            (start, i) => start + (endPath[i] - start) * easedProgress
+          );
+          element.setAttribute('d', `M${currentPath.join(' ')}`);
+          requestAnimationFrame(animate);
+        } else {
+          element.setAttribute('d', `M${endPath.join(' ')}`);
+        }
+      }
+      requestAnimationFrame(animate);
+    }, delay);
+  };
 
   const easeInOutBack = (t: number): number => {
     const c1 = 1.70158;
@@ -32,76 +84,26 @@ export const AnimatedLogo: React.FC = () => {
       : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
   };
 
-  const animatePath = (
-    element: SVGPathElement,
-    startPath: number[],
-    endPath: number[],
-    duration: number,
-    delay: number
-  ): Promise<void> => {
-    return new Promise((resolve) => {
-      const startTime = performance.now();
-      setTimeout(() => {
-        function animate(time: number) {
-          const progress = Math.min((time - startTime) / duration, 1);
-          if (progress < 1) {
-            const easedProgress = easeInOutBack(progress);
-            const currentPath = startPath.map(
-              (start, i) => start + (endPath[i] - start) * easedProgress
-            );
-            element.setAttribute('d', `M${currentPath.join(' ')}`);
-            requestAnimationFrame(animate);
-          } else {
-            element.setAttribute('d', `M${endPath.join(' ')}`);
-            resolve();
-          }
-        }
-        requestAnimationFrame(animate);
-      }, delay);
-    });
-  };
-
-  const animateLogo = () => {
-    if (!logoRef.current) return;
-    const paths = logoRef.current.querySelectorAll('path');
-    const startPaths = hamburgerPaths;
-    const endPaths = wPaths;
-
-    const animations = Array.from(paths).map((path, index) =>
-      animatePath(path, startPaths[index], endPaths[index], 800, index * 50)
-    );
-
-    Promise.all(animations);
-  };
-
-  useEffect(() => {
-    // Start the animation after a short delay to ensure the component is fully mounted
-    const timer = setTimeout(() => {
-      animateLogo();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div className="w-[200px] h-[200px] mx-auto">
-      <svg
-        ref={logoRef}
-        className="w-full h-full"
-        viewBox="-10 -10 120 120"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        {colors.map((color, index) => (
-          <path
-            key={index}
-            d={`M${hamburgerPaths[index].join(' ')}`}
-            strokeWidth="18"
-            strokeLinecap="round"
-            fill="none"
-            stroke={color}
-          />
-        ))}
-      </svg>
+    <div className="relative flex items-center justify-center mt-[200px]">
+      <animated.div style={{ scale }}>
+        <svg
+          ref={logoRef}
+          className="w-full h-full"
+          viewBox="-10 -10 120 120"
+          preserveAspectRatio="xMidYMid meet">
+          {buttons.map((button, index) => (
+            <g key={index} className="leg">
+              <path
+                strokeWidth="18"
+                strokeLinecap="round"
+                fill="none"
+                stroke={button.color}
+              />
+            </g>
+          ))}
+        </svg>
+      </animated.div>
     </div>
   );
 };
