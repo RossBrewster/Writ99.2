@@ -34,7 +34,7 @@ export const Logo: React.FC<LogoProps> = ({ buttons }) => {
       if (!hasAnimated) {
         await next({ scale: 1.5 });
         await new Promise(resolve => setTimeout(resolve, 0)); // Adjust timing as needed
-        await next({ scale: 0.5 });
+        await next({ scale: 0.75 });
         setHasAnimated(true);
       }
     },
@@ -85,7 +85,7 @@ export const Logo: React.FC<LogoProps> = ({ buttons }) => {
   };
 
   return (
-    <div className="relative flex items-center justify-center mt-[200px]">
+    <div className="relative flex items-center justify-center">
       <animated.div style={{ scale }}>
         <svg
           ref={logoRef}

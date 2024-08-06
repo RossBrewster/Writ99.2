@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { DarkModeToggle } from '../components/shared/DarkModeToggle';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { useDarkMode } from '../contexts/DarkModeContext'; // Updated import
 import { Logo } from '../components/shared/BlankLogo';
 import { useNavigate } from 'react-router-dom';
 import { ButtonData } from '../types/types';
@@ -13,7 +13,7 @@ interface UserResponse {
 }
 
 export const SignUpPage: React.FC = () => {
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { isDarkMode } = useDarkMode(); // Updated to use the new context
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -69,10 +69,6 @@ export const SignUpPage: React.FC = () => {
     }
   };
 
-  const handleLogoButtonClick = useCallback((buttonText: string) => {
-    console.log(`Logo button clicked: ${buttonText}`);
-    // Add any specific logic for logo button clicks here
-  }, []);
 
   const logoButtons: ButtonData[] = [
     { text: 'Teachers', color: '#EA4335' },
@@ -83,10 +79,10 @@ export const SignUpPage: React.FC = () => {
 
   return (
     <div className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} font-sans`}>
-      <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      <DarkModeToggle /> {/* Updated: removed props */}
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
         <div className="w-full flex justify-center mb-8">
-          <Logo buttons={logoButtons}/>
+          <Logo buttons={logoButtons} />
         </div>
         <div className="w-full max-w-md">
           <h2 className="mt-6 text-center text-3xl font-extrabold">
