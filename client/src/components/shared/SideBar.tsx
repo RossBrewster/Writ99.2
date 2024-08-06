@@ -1,14 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Home, Book, Users, Settings } from 'lucide-react';
-import { useDarkMode } from '../../hooks/useDarkMode';
+import { useDarkMode } from '../../contexts/DarkModeContext'; // Updated import
 
 interface SidebarProps {
   userType: 'teacher' | 'student';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ userType }) => {
-  const { isDarkMode } = useDarkMode();
+  const { isDarkMode } = useDarkMode(); // Using the new context
 
   const menuItems = userType === 'teacher'
     ? [
@@ -24,18 +23,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ userType }) => {
       ];
 
   return (
-    <aside className={`${isDarkMode ? 'bg-gray-900 text-gray-300' : 'bg-gray-100 text-gray-800'} w-64 min-h-screen p-4 transition-colors duration-200`}>
+    <aside className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} w-64 min-h-full p-4 transition-colors duration-200 rounded-md`}>
       <nav>
         <ul>
           {menuItems.map((item, index) => (
             <li key={index} className="mb-2">
-              <Link 
-                to={item.link} 
-                className={`flex items-center p-2 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} rounded transition-colors duration-200`}
+              <div 
+                className={`flex items-center p-2 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200'} rounded transition-colors duration-200`}
               >
                 <item.icon size={20} className="mr-2" />
                 {item.text}
-              </Link>
+              </div>
             </li>
           ))}
         </ul>

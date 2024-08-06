@@ -1,47 +1,28 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, LogOut } from 'lucide-react';
-import { useDarkMode } from '../../hooks/useDarkMode';
 import { useAuth } from '../../contexts/AuthContext';
+import { SideBarLogo } from './SideBarLogo';
+import { useDarkMode } from '../../contexts/DarkModeContext'; // Update the import path as needed
+import { UnFixedDarkModeToggle } from './UnFixedDarkModeToggle';
 
 export const DashboardHeader: React.FC = () => {
-  const navigate = useNavigate();
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const { isAuthenticated, username, role, logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
+  const { isAuthenticated, role } = useAuth();
+  const { isDarkMode } = useDarkMode();
 
   if (!isAuthenticated) {
-    return null; // Or you could redirect to login page
+    return null;
   }
 
   return (
-    <header className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-md p-4 transition-colors duration-200`}>
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-bold">
-          {role === 'teacher' ? 'Teacher' : 'Student'} Dashboard
-        </h1>
-        <div className="flex items-center space-x-4">
-          <button className={`${isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-800'}`}>
-            <Bell size={24} />
-          </button>
-          <span>{username}</span>
-          <button 
-            onClick={handleLogout}
-            className="text-red-600 hover:text-red-800 flex items-center"
-          >
-            <LogOut size={24} className="mr-1" />
-            Logout
-          </button>
-          <button 
-            onClick={toggleDarkMode}
-            className={`${isDarkMode ? 'bg-yellow-400 text-gray-900' : 'bg-gray-800 text-yellow-400'} px-3 py-1 rounded`}
-          >
-            {isDarkMode ? 'Light' : 'Dark'}
-          </button>
+    <header className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} shadow-md transition-colors duration-200`}>
+      <div className='flex ml-5 justify-between items-center'>
+        <div>
+          <SideBarLogo />
+        </div>
+        <div className='flex items-center gap-5 mr-8'>
+          <h1 className="text-2xl font-bold hidden sm:block mr-8">
+            {role === 'teacher' ? 'Teacher' : 'Student'} Dashboard
+          </h1>
+          <UnFixedDarkModeToggle />
         </div>
       </div>
     </header>
