@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Book, Users, Settings } from 'lucide-react';
+import { Home, Book, Users, Settings, BoxesIcon } from 'lucide-react';
 import { useDarkMode } from '../../contexts/DarkModeContext'; // Updated import
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userType }) => {
         { icon: Book, text: 'Assignments', link: '/assignments' },
         { icon: Users, text: 'Students', link: '/students' },
         { icon: Settings, text: 'Settings', link: '/settings' },
+        { icon: BoxesIcon, text: 'Rubrics', link: '/rubrics' },
       ]
     : [
         { icon: Home, text: 'Dashboard', link: '/dashboard' },

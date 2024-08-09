@@ -1,39 +1,50 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+// import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 
 interface CreateClassroomProps {
   onClassroomCreated?: () => void;
 }
 
+const classroomSchema = z.object({
+  name: z.string().min(1, 'Classroom name is required').max(100, 'Classroom name must be 100 characters or less'),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional(),
+});
+
+type FormValues = z.infer<typeof classroomSchema>;
+
 const CreateClassroom: React.FC<CreateClassroomProps> = ({ onClassroomCreated }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
   const { isAuthenticated, role, id } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(classroomSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+    },
+  });
+
+  const handleSubmit = async (values: FormValues) => {
     setError('');
     setSuccess(false);
 
     if (!isAuthenticated || role !== 'teacher') {
       setError('You must be logged in as a teacher to create a classroom');
-      return;
-    }
-
-    if (!name.trim()) {
-      setError('Classroom name is required');
       return;
     }
 
@@ -46,8 +57,7 @@ const CreateClassroom: React.FC<CreateClassroomProps> = ({ onClassroomCreated })
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          name,
-          description,
+          ...values,
           teacherId: id,
         }),
       });
@@ -57,8 +67,7 @@ const CreateClassroom: React.FC<CreateClassroomProps> = ({ onClassroomCreated })
       }
 
       setSuccess(true);
-      setName('');
-      setDescription('');
+      form.reset();
       if (onClassroomCreated) {
         onClassroomCreated();
       }
@@ -80,33 +89,45 @@ const CreateClassroom: React.FC<CreateClassroomProps> = ({ onClassroomCreated })
           <AlertDescription>You must be logged in as a teacher to create a classroom.</AlertDescription>
         </Alert>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <Label htmlFor="name" className={isDarkMode ? 'text-white' : 'text-gray-800'}>
-              Classroom Name
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter classroom name"
-              className={isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Classroom Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter classroom name"
+                      className={isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="mb-4">
-            <Label htmlFor="description" className={isDarkMode ? 'text-white' : 'text-gray-800'}>
-              Description (Optional)
-            </Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter classroom description"
-              className={isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Enter classroom description"
+                      className={isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button type="submit" className="w-full">Create Classroom</Button>
-        </form>
+            <Button type="submit" className="w-full">Create Classroom</Button>
+          </form>
+        </Form>
       )}
       {error && (
         <Alert variant="destructive" className="mt-4">

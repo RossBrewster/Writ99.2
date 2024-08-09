@@ -3,7 +3,7 @@ import { DashboardHeader } from '../components/shared/DashboardHeader';
 import { useMenu } from '../contexts/MenuContext';
 import { Sidebar } from '../components/shared/SideBar';
 import { useDarkMode } from '../contexts/DarkModeContext'; // Import useDarkMode
-// import { CreateAssignment } from '../components/Assignments/CreateAssignment';
+import { CreateAssignmentModal } from '../components/Assignments/CreateAssignment';
 import CreateClassroom from '../components/classroom/CreateClassroom';
 
 export const TeacherDashboard: React.FC = () => {
@@ -19,6 +19,7 @@ export const TeacherDashboard: React.FC = () => {
             <Sidebar userType="teacher"/>
           )}
           <CreateClassroom />
+          <CreateAssignmentModal />
         </main>
       </div>
     </div>

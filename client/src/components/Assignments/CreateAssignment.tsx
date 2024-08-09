@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,10 +8,11 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useState } from 'react';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -26,8 +28,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const CreateAssignment = () => {
+export const CreateAssignmentModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { isDarkMode } = useDarkMode();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,10 +49,11 @@ export const CreateAssignment = () => {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3001/assignments', {
+      const response = await fetch('api/assignments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(values),
       });
@@ -58,6 +64,7 @@ export const CreateAssignment = () => {
 
       const data = await response.json();
       console.log('Assignment created:', data);
+      setIsOpen(false);
     } catch (error) {
       console.error('Failed to create assignment:', error);
       // Here you might want to set an error state and display it to the user
@@ -66,9 +73,11 @@ export const CreateAssignment = () => {
     }
   };
 
-  return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8 w-full">
-      <h1 className="text-2xl font-bold mb-6">Create New Assignment</h1>
+  const modalContent = (
+    <DialogContent className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} transition-colors duration-200 max-w-4xl max-h-[90vh] overflow-y-auto`}>
+      <DialogHeader>
+        <DialogTitle className={isDarkMode ? 'text-white' : 'text-gray-800'}>Create New Assignment</DialogTitle>
+      </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -76,9 +85,9 @@ export const CreateAssignment = () => {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Assignment title" {...field} className="w-full" />
+                  <Input placeholder="Assignment title" {...field} className={`w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,9 +98,9 @@ export const CreateAssignment = () => {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Assignment description" {...field} className="w-full min-h-[100px]" />
+                  <Textarea placeholder="Assignment description" {...field} className={`w-full min-h-[100px] ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,9 +111,9 @@ export const CreateAssignment = () => {
             name="instructions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Instructions</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Instructions</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Assignment instructions" {...field} className="w-full min-h-[100px]" />
+                  <Textarea placeholder="Assignment instructions" {...field} className={`w-full min-h-[100px] ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,9 +124,9 @@ export const CreateAssignment = () => {
             name="readingMaterial"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Reading Material (Optional)</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Reading Material (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="URL or description of reading material" {...field} className="w-full" />
+                  <Input placeholder="URL or description of reading material" {...field} className={`w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,9 +137,9 @@ export const CreateAssignment = () => {
             name="prompt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Prompt</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Prompt</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Assignment prompt" {...field} className="w-full min-h-[100px]" />
+                  <Textarea placeholder="Assignment prompt" {...field} className={`w-full min-h-[100px] ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,9 +150,9 @@ export const CreateAssignment = () => {
             name="minimumDrafts"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Minimum Drafts</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Minimum Drafts</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value, 10))} className="w-full" />
+                  <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value, 10))} className={`w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,7 +163,7 @@ export const CreateAssignment = () => {
             name="dueDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel className={isDarkMode ? 'text-white' : 'text-gray-800'}>Due Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -162,7 +171,8 @@ export const CreateAssignment = () => {
                         variant={"outline"}
                         className={cn(
                           "w-full md:w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          !field.value && "text-muted-foreground",
+                          isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
                         )}
                       >
                         {field.value ? (
@@ -174,7 +184,7 @@ export const CreateAssignment = () => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className={`w-auto p-0 ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`} align="start">
                     <Calendar
                       mode="single"
                       selected={field.value}
@@ -183,6 +193,7 @@ export const CreateAssignment = () => {
                         date < new Date() || date < new Date("1900-01-01")
                       }
                       initialFocus
+                      className={isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}
                     />
                   </PopoverContent>
                 </Popover>
@@ -190,12 +201,22 @@ export const CreateAssignment = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
+          <Button type="submit" className={`w-full md:w-auto ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`} disabled={isSubmitting}>
             {isSubmitting ? 'Creating...' : 'Create Assignment'}
           </Button>
         </form>
       </Form>
-    </div>
+    </DialogContent>
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className={isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}>
+          Create New Assignment
+        </Button>
+      </DialogTrigger>
+      {modalContent}
+    </Dialog>
   );
 };
-
