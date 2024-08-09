@@ -23,6 +23,7 @@ import { RubricModule } from './modules/rubric/rubric.module';
 import { AssignmentModule } from './modules/assignment/assignment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ClassroomModule } from './modules/classroom/classroom.module';
 
 
 
@@ -39,7 +40,8 @@ import { AuthModule } from './modules/auth/auth.module';
     RubricModule,
     AssignmentModule,
     SubmissionModule,
-    AuthModule
+    AuthModule,
+    ClassroomModule
   ],
   controllers: [AppController],
   providers: [AppService, MyGateway],

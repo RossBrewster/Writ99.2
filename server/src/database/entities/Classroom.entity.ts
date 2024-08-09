@@ -13,6 +13,9 @@ export class Classroom {
     @Column({ nullable: true })
     description: string;
 
+    @Column()
+    teacherId: number;
+
     @ManyToOne(() => User, user => user.taughtClassrooms)
     teacher: User;
 
