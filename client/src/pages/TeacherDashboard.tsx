@@ -5,10 +5,15 @@ import { Sidebar } from '../components/shared/SideBar';
 import { useDarkMode } from '../contexts/DarkModeContext'; // Import useDarkMode
 import { CreateAssignmentModal } from '../components/Assignments/CreateAssignment';
 import CreateClassroom from '../components/classroom/CreateClassroom';
+import { GenerateInvitation } from '../components/GenerateInvitation';
+import { useClassrooms } from '../contexts/ClassroomContext';
 
 export const TeacherDashboard: React.FC = () => {
   const { isMenuOpen } = useMenu();
   const { isDarkMode } = useDarkMode(); // Use the useDarkMode hook
+  const { classrooms} = useClassrooms();
+
+  const classroomIds = classrooms.map(classroom => classroom.id);
 
   return (
     <div className={`flex h-screen ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
@@ -20,6 +25,7 @@ export const TeacherDashboard: React.FC = () => {
           )}
           <CreateClassroom />
           <CreateAssignmentModal />
+          <GenerateInvitation classroomIds={classroomIds} />
         </main>
       </div>
     </div>

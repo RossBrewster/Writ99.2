@@ -67,4 +67,39 @@ export class ClassroomService {
   async setTeacher(classroomId: number, teacherId: number): Promise<Classroom> {
     return this.classroomRepository.setTeacher(classroomId, teacherId);
   }
+
+  async generateInvitationCode(classroomId: number): Promise<string> {
+    const classroom = await this.classroomRepository.findById(classroomId);
+    if (!classroom) {
+      throw new Error('Classroom not found');
+    }
+
+    const code = this.generateUniqueCode();
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 7); // Code expires in 7 days
+
+    await this.classroomRepository.updateInvitationCode(classroomId, code, expirationDate);
+
+    return code;
+  }
+
+  async validateInvitationCode(code: string): Promise<Classroom | null> {
+    const classroom = await this.classroomRepository.findByInvitationCode(code);
+
+    if (!classroom || classroom.invitationCodeExpiration < new Date()) {
+      return null;
+    }
+
+    return classroom;
+  }
+
+  async clearInvitationCode(classroomId: number): Promise<void> {
+    await this.classroomRepository.clearInvitationCode(classroomId);
+  }
+
+  private generateUniqueCode(): string {
+    // Generate a random 6-digit code
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+  
 }

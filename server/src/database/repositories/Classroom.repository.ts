@@ -85,4 +85,26 @@ export class ClassroomRepository {
     }
     throw new Error('Classroom or Teacher not found');
   }
+
+  async findByInvitationCode(code: string): Promise<Classroom | undefined> {
+    return await this.classroomRepository.findOne({
+      where: { invitationCode: code },
+    });
+  }
+
+  async updateInvitationCode(id: number, code: string, expiration: Date): Promise<Classroom | undefined> {
+    await this.classroomRepository.update(id, {
+      invitationCode: code,
+      invitationCodeExpiration: expiration,
+    });
+    return this.findById(id);
+  }
+
+  async clearInvitationCode(id: number): Promise<Classroom | undefined> {
+    await this.classroomRepository.update(id, {
+      invitationCode: null,
+      invitationCodeExpiration: null,
+    });
+    return this.findById(id);
+  }
 }

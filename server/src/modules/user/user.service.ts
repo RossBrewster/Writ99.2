@@ -53,4 +53,23 @@ export class UserService {
   async getStudentsWithEnrollments(): Promise<User[]> {
     return this.userRepository.findStudentsWithEnrollments();
   }
+
+  async joinClassroom(userId: number, invitationCode: string): Promise<User> {
+    try {
+      return await this.userRepository.joinClassroomByInvitationCode(userId, invitationCode);
+    } catch (error) {
+      // Handle specific errors
+      if (error.message === 'User not found') {
+        throw new Error('User not found');
+      } else if (error.message === 'Invalid invitation code') {
+        throw new Error('Invalid invitation code');
+      } else if (error.message === 'Invitation code has expired') {
+        throw new Error('Invitation code has expired');
+      } else if (error.message === 'User is already enrolled in this classroom') {
+        throw new Error('You are already enrolled in this classroom');
+      }
+      // For any other errors, throw a generic error
+      throw new Error('An error occurred while joining the classroom');
+    }
+  }
 }
