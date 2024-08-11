@@ -20,7 +20,11 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const user = await this.userRepository.findByEmail(loginDto.email);
     if (user && await bcrypt.compare(loginDto.password, user.passwordHash)) {
-      const payload = { username: user.username, sub: user.id, role: user.role };
+      const payload = {
+        username: user.username,
+        sub: user.id,
+        role: user.role
+      };
       const token = this.jwtService.sign(payload);
       return {
         id: user.id,

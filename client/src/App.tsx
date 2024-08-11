@@ -7,7 +7,8 @@ import { TeacherDashboard } from './pages/TeacherDashboard';
 import { StudentDashboard } from './pages/StudentDashboard';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MenuProvider } from './contexts/MenuContext';
-import { DarkModeProvider } from './contexts/DarkModeContext'; // Import the DarkModeProvider
+import { DarkModeProvider } from './contexts/DarkModeContext';
+import { ClassroomProvider } from './contexts/ClassroomContext'; // Import the ClassroomProvider
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -25,17 +26,28 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 const DashboardRoute: React.FC = () => {
   const { role } = useAuth();
-  return (
-    <MenuProvider>
-      {role === 'teacher' ? <TeacherDashboard /> : <StudentDashboard />}
-    </MenuProvider>
-  );
+  
+  if (role === 'teacher') {
+    return (
+      <MenuProvider>
+        <ClassroomProvider>
+          <TeacherDashboard />
+        </ClassroomProvider>
+      </MenuProvider>
+    );
+  } else {
+    return (
+      <MenuProvider>
+        <StudentDashboard />
+      </MenuProvider>
+    );
+  }
 };
 
 function App() {
   return (
     <AuthProvider>
-      <DarkModeProvider> {/* Wrap the entire app with DarkModeProvider */}
+      <DarkModeProvider>
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />

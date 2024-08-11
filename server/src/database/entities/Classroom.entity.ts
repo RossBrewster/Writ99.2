@@ -13,6 +13,15 @@ export class Classroom {
     @Column({ nullable: true })
     description: string;
 
+    @Column()
+    teacherId: number;
+
+    @Column({ length: 6, unique: true, nullable: true })
+    invitationCode: string;
+
+    @Column({ nullable: true })
+    invitationCodeExpiration: Date;
+
     @ManyToOne(() => User, user => user.taughtClassrooms)
     teacher: User;
 
@@ -23,3 +32,4 @@ export class Classroom {
     @OneToMany(() => Assignment, assignment => assignment.classroom)
     assignments: Assignment[];
 }
+

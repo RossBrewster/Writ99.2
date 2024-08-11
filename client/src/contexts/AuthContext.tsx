@@ -6,6 +6,7 @@ interface AuthContextType {
   username: string | null;
   role: 'student' | 'teacher' | 'admin' | null;
   login: (username: string, role: 'student' | 'teacher' | 'admin', token: string) => void;
+  id: number | null;
   logout: () => void;
 }
 
@@ -16,6 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [username, setUsername] = useState<string | null>(null);
   const [role, setRole] = useState<'student' | 'teacher' | 'admin' | null>(null);
+  const [id, setId] = useState<number | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -39,10 +41,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAuthenticated(true);
           setUsername(data.username);
           setRole(data.role);
+          setId(data.id);
         } else {
           setIsAuthenticated(false);
           setUsername(null);
           setRole(null);
+          setId(null);
           localStorage.removeItem('token');
         }
       } catch (error) {
@@ -50,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(false);
         setUsername(null);
         setRole(null);
+        setId(null);
         localStorage.removeItem('token');
       } finally {
         setIsLoading(false);
@@ -64,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(true);
     setUsername(username);
     setRole(role);
+    setId(id);
   };
 
   const logout = async () => {
@@ -80,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(false);
         setUsername(null);
         setRole(null);
+        setId(null); 
       } else {
         console.error('Logout failed:', await response.text());
       }
@@ -89,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, username, role, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, username, role, login, logout, id }}>
       {children}
     </AuthContext.Provider>
   );

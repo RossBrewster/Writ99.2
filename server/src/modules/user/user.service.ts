@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { UserRepository } from '../../database/repositories/User.repository';
 import { User } from '../../database/entities/User.entity';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -52,5 +54,18 @@ export class UserService {
 
   async getStudentsWithEnrollments(): Promise<User[]> {
     return this.userRepository.findStudentsWithEnrollments();
+  }
+
+  async joinClassroom(userId: number, invitationCode: string): Promise<UserResponseDto> {
+    try {
+      return await this.userRepository.joinClassroomByInvitationCode(userId, invitationCode);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+      throw new Error('An error occurred while joining the classroom');
+    }
   }
 }

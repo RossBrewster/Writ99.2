@@ -1,17 +1,17 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { AssignmentService } from './assignment.service';
 import { CreateAssignmentDto, UpdateAssignmentDto } from './dto/assignment.dto';
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-// import { RolesGuard } from '../auth/guards/roles.guard';
-// import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth//roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('assignments')
-// @UseGuards(JwtAuthGuard, RolesGuard)
 export class AssignmentController {
   constructor(private readonly assignmentService: AssignmentService) {}
-
+  
   @Post()
-  // @Roles('teacher', 'admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('teacher', 'admin')
   async create(@Body() createAssignmentDto: CreateAssignmentDto) {
     return await this.assignmentService.create(createAssignmentDto);
   }

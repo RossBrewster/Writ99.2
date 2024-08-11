@@ -13,7 +13,7 @@ export const DashboardHeader: React.FC = () => {
   }
 
   return (
-    <header className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} shadow-md transition-colors duration-200`}>
+    <header className={`${isDarkMode ? 'bg-[#111827] text-white' : 'bg-[#bec8de] text-gray-900'} shadow-md transition-colors duration-200`}>
       <div className='flex ml-5 justify-between items-center'>
         <div>
           <SideBarLogo />

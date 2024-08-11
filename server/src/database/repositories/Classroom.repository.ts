@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import { Classroom } from '../entities/Classroom.entity';
 import { User } from '../entities/User.entity';
 
@@ -29,8 +29,8 @@ export class ClassroomRepository {
     return this.findById(id);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.classroomRepository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.classroomRepository.delete(id);
   }
 
   async findByTeacher(teacherId: number): Promise<Classroom[]> {
@@ -84,5 +84,27 @@ export class ClassroomRepository {
       return await this.classroomRepository.save(classroom);
     }
     throw new Error('Classroom or Teacher not found');
+  }
+
+  async findByInvitationCode(code: string): Promise<Classroom | undefined> {
+    return await this.classroomRepository.findOne({
+      where: { invitationCode: code },
+    });
+  }
+
+  async updateInvitationCode(id: number, code: string, expiration: Date): Promise<Classroom | undefined> {
+    await this.classroomRepository.update(id, {
+      invitationCode: code,
+      invitationCodeExpiration: expiration,
+    });
+    return this.findById(id);
+  }
+
+  async clearInvitationCode(id: number): Promise<Classroom | undefined> {
+    await this.classroomRepository.update(id, {
+      invitationCode: null,
+      invitationCodeExpiration: null,
+    });
+    return this.findById(id);
   }
 }
