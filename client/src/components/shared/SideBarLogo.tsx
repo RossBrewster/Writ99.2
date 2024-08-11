@@ -92,6 +92,7 @@ export const SideBarLogo: React.FC = () => {
           className="w-full h-full"
           viewBox={viewBox}
           preserveAspectRatio="xMidYMid meet"
+          alt-text="Menu open/close icon"
         >
           {colors.map((color, index) => (
             <path

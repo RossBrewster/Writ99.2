@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { User } from '../../shared/decorators/user.decorator';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 // import { TestUser } from '../../shared/decorators/user.decorator';
 
 @Controller('classrooms')
@@ -96,7 +97,7 @@ export class ClassroomController {
   }
 
   @Post('join')
-  async joinClassroom(@Body() body: { invitationCode: string }, @User() user: any) {
+  async joinClassroom(@Body() body: { invitationCode: string }, @User() user: any): Promise<{ message: string, user: UserResponseDto }> {
     try {
       const updatedUser = await this.userService.joinClassroom(user.id, body.invitationCode);
       return { message: 'Successfully joined the classroom', user: updatedUser };

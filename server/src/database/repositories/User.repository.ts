@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOneOptions } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import { User } from '../entities/User.entity';
 import { Classroom } from '../entities/Classroom.entity';
-import { Assignment } from '../entities/Assignment.entity';
+import { UserResponseDto } from '../../modules/user/dto/user-response.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private entityManager: EntityManager
   ) {}
 
   // Create
@@ -114,38 +115,46 @@ export class UserRepository {
       .getMany();
   }
 
-  async joinClassroomByInvitationCode(userId: number, invitationCode: string): Promise<User> {
-    const user = await this.findById(userId, ['enrolledClassrooms']);
-    const classroom = await this.userRepository.manager.findOne(Classroom, { 
-      where: { invitationCode },
-      relations: ['students']
+  async joinClassroomByInvitationCode(userId: number, invitationCode: string): Promise<UserResponseDto> {
+    return this.entityManager.transaction(async transactionalEntityManager => {
+      const user = await transactionalEntityManager.findOne(User, {
+        where: { id: userId },
+        relations: ['enrolledClassrooms']
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const classroom = await transactionalEntityManager.findOne(Classroom, {
+        where: { invitationCode },
+        relations: ['students']
+      });
+
+      if (!classroom) {
+        throw new BadRequestException('Invalid invitation code');
+      }
+
+      if (classroom.invitationCodeExpiration && classroom.invitationCodeExpiration < new Date()) {
+        throw new BadRequestException('Invitation code has expired');
+      }
+
+      if (user.enrolledClassrooms.some(c => c.id === classroom.id)) {
+        throw new BadRequestException('User is already enrolled in this classroom');
+      }
+
+      user.enrolledClassrooms.push(classroom);
+      classroom.students.push(user);
+
+      // Clear the invitation code after successful join
+      // classroom.invitationCode = null;
+      // classroom.invitationCodeExpiration = null;
+
+      await transactionalEntityManager.save(classroom);
+      await transactionalEntityManager.save(user);
+
+      return UserResponseDto.fromEntity(user);
     });
-    
-    if (!user) {
-      throw new Error('User not found');
-    }
-    
-    if (!classroom) {
-      throw new Error('Invalid invitation code');
-    }
-    
-    if (classroom.invitationCodeExpiration < new Date()) {
-      throw new Error('Invitation code has expired');
-    }
-    
-    // Check if the user is already enrolled in the classroom
-    if (user.enrolledClassrooms.some(c => c.id === classroom.id)) {
-      throw new Error('User is already enrolled in this classroom');
-    }
-    
-    user.enrolledClassrooms.push(classroom);
-    classroom.students.push(user);
-    
-    // Clear the invitation code after successful join
-    classroom.invitationCode = null;
-    classroom.invitationCodeExpiration = null;
-    
-    await this.userRepository.manager.save(classroom);
-    return await this.userRepository.save(user);
   }
+
 }
