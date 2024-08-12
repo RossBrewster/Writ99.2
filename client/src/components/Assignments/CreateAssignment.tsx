@@ -13,6 +13,7 @@ import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useDarkMode } from '../../contexts/DarkModeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -32,6 +33,8 @@ export const CreateAssignmentModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
+  const { id: userId } = useAuth();
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,7 +58,10 @@ export const CreateAssignmentModal = () => {
           'Content-Type': 'application/json',
           'authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          createdById: userId, // Include the user's ID in the request
+        }),
       });
 
       if (!response.ok) {

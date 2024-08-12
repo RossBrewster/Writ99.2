@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "ty
 import { User } from "./User.entity";
 import { StudentSubmission } from "./StudentSubmission.entity";
 import { RubricVersion } from "./RubricVersion.entity";
-import { Classroom } from "./Classroom.entity";
+import { ClassroomAssignment } from "./ClassroomAssignment.entity";
 
 @Entity()
 export class Assignment {
@@ -28,13 +28,13 @@ export class Assignment {
     minimumDrafts: number;
 
     @Column()
-    dueDate: Date;
+    createdById: number;
 
     @ManyToOne(() => User, user => user.createdAssignments)
     createdBy: User;
 
-    @ManyToOne(() => Classroom, classroom => classroom.assignments)
-    classroom: Classroom;
+    @OneToMany(() => ClassroomAssignment, classroomAssignment => classroomAssignment.assignment)
+    classroomAssignments: ClassroomAssignment[];
 
     @OneToMany(() => StudentSubmission, submission => submission.assignment)
     submissions: StudentSubmission[];
