@@ -13,6 +13,7 @@ export class AssignmentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('teacher', 'admin')
   async create(@Body() createAssignmentDto: CreateAssignmentDto) {
+    console.log('Received assignment data:', createAssignmentDto);
     return await this.assignmentService.create(createAssignmentDto);
   }
 

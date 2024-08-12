@@ -7,6 +7,7 @@ export class AssignmentService {
   constructor(private assignmentRepository: AssignmentRepository) {}
 
   async create(createAssignmentDto: CreateAssignmentDto) {
+    console.log('Creating assignment with data:', createAssignmentDto);
     return await this.assignmentRepository.create(createAssignmentDto);
   }
 

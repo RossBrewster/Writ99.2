@@ -2,17 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Assignment } from '../entities/Assignment.entity';
-import { User } from '../entities/User.entity';
 import { Classroom } from '../entities/Classroom.entity';
+import { User } from '../entities/User.entity';
+import { ClassroomAssignmentRepository } from './ClassroomAssignment.repository';
 
 @Injectable()
 export class AssignmentRepository {
+  private userRepository: Repository<User>;
+
   constructor(
     @InjectRepository(Assignment)
     private assignmentRepository: Repository<Assignment>,
-  ) {}
+    @InjectRepository(Classroom)
+    private classroomRepository: Repository<Classroom>,
+    @InjectRepository(User)
+    userRepository: Repository<User>,
+    private classroomAssignmentRepository: ClassroomAssignmentRepository,
+  ) {
+    this.userRepository = userRepository;
+  }
 
   async create(assignmentData: Partial<Assignment>): Promise<Assignment> {
+    console.log('Inserting assignment with data:', assignmentData);
     const assignment = this.assignmentRepository.create(assignmentData);
     return await this.assignmentRepository.save(assignment);
   }
@@ -35,10 +46,8 @@ export class AssignmentRepository {
   }
 
   async findByClassroom(classroomId: number): Promise<Assignment[]> {
-    return await this.assignmentRepository.find({
-      where: { classroom: { id: classroomId } },
-      relations: ['classroom'],
-    });
+    const classroomAssignments = await this.classroomAssignmentRepository.findByClassroom(classroomId);
+    return classroomAssignments.map(ca => ca.assignment);
   }
 
   async findByCreator(userId: number): Promise<Assignment[]> {
@@ -63,25 +72,31 @@ export class AssignmentRepository {
   }
 
   async addAssignmentToClassroom(assignmentId: number, classroomId: number): Promise<Assignment> {
-    const assignment = await this.findById(assignmentId);
-    const classroom = await this.assignmentRepository.manager.findOne(Classroom, { where: { id: classroomId } });
-    
-    if (assignment && classroom) {
-      assignment.classroom = classroom;
-      return await this.assignmentRepository.save(assignment);
+    const assignment = await this.assignmentRepository.findOne({ where: { id: assignmentId } });
+    const classroom = await this.classroomRepository.findOne({ where: { id: classroomId } });
+
+    if (!assignment || !classroom) {
+      throw new Error('Assignment or Classroom not found');
     }
-    throw new Error('Assignment or Classroom not found');
+
+    await this.classroomAssignmentRepository.create({
+      assignment: assignment,
+      classroom: classroom,
+    });
+
+    return assignment;
   }
 
   async setCreator(assignmentId: number, userId: number): Promise<Assignment> {
-    const assignment = await this.findById(assignmentId);
-    const user = await this.assignmentRepository.manager.findOne(User, { where: { id: userId } });
+    const assignment = await this.assignmentRepository.findOne({ where: { id: assignmentId } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     
-    if (assignment && user) {
-      assignment.createdBy = user;
-      return await this.assignmentRepository.save(assignment);
+    if (!assignment || !user) {
+      throw new Error('Assignment or User not found');
     }
-    throw new Error('Assignment or User not found');
+
+    assignment.createdBy = user;
+    return await this.assignmentRepository.save(assignment);
   }
 
   async findUpcomingAssignments(daysAhead: number = 7): Promise<Assignment[]> {
@@ -89,9 +104,10 @@ export class AssignmentRepository {
     const futureDate = new Date(currentDate.getTime() + daysAhead * 24 * 60 * 60 * 1000);
     
     return await this.assignmentRepository.createQueryBuilder('assignment')
-      .where('assignment.dueDate > :currentDate', { currentDate })
-      .andWhere('assignment.dueDate <= :futureDate', { futureDate })
-      .orderBy('assignment.dueDate', 'ASC')
+      .leftJoinAndSelect('assignment.classroomAssignments', 'classroomAssignment')
+      .where('classroomAssignment.dueDate > :currentDate', { currentDate })
+      .andWhere('classroomAssignment.dueDate <= :futureDate', { futureDate })
+      .orderBy('classroomAssignment.dueDate', 'ASC')
       .getMany();
   }
 
