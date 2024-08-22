@@ -1,19 +1,19 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { SideBarLogo } from './SideBarLogo';
-import { useDarkMode } from '../../contexts/DarkModeContext'; // Update the import path as needed
+// import { useDarkMode } from '../../contexts/DarkModeContext'; // Update the import path as needed
 import { UnFixedDarkModeToggle } from './UnFixedDarkModeToggle';
 
 export const DashboardHeader: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
-  const { isDarkMode } = useDarkMode();
+  // const { isDarkMode } = useDarkMode();
 
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <header className={`${isDarkMode ? 'bg-[#111827] text-white' : 'bg-[#bec8de] text-gray-900'} shadow-md transition-colors duration-200`}>
+    <header className={`bg-[#111827] text-white shadow-md transition-colors duration-200`}>
       <div className='flex ml-5 justify-between items-center'>
         <div>
           <SideBarLogo />

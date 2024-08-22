@@ -26,22 +26,18 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 const DashboardRoute: React.FC = () => {
   const { role } = useAuth();
-  
-  if (role === 'teacher') {
-    return (
-      <MenuProvider>
+
+  return (
+    <MenuProvider>
+      {role === 'teacher' ? (
         <ClassroomProvider>
           <TeacherDashboard />
         </ClassroomProvider>
-      </MenuProvider>
-    );
-  } else {
-    return (
-      <MenuProvider>
+      ) : (
         <StudentDashboard />
-      </MenuProvider>
-    );
-  }
+      )}
+    </MenuProvider>
+  );
 };
 
 function App() {
@@ -61,5 +57,4 @@ function App() {
     </AuthProvider>
   );
 }
-
 export default App;

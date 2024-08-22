@@ -2,30 +2,22 @@ import React from 'react';
 import { DashboardHeader } from '../components/shared/DashboardHeader';
 import { useMenu } from '../contexts/MenuContext';
 import { Sidebar } from '../components/shared/SideBar';
-import { useDarkMode } from '../contexts/DarkModeContext'; // Import useDarkMode
-import { CreateAssignmentModal } from '../components/Assignments/CreateAssignment';
-import CreateClassroom from '../components/classroom/CreateClassroom';
-import { GenerateInvitation } from '../components/GenerateInvitation';
-import { useClassrooms } from '../contexts/ClassroomContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
+import { ClassroomSelector } from '../components/classroom/ClassroomSelector';
 
 export const TeacherDashboard: React.FC = () => {
   const { isMenuOpen } = useMenu();
   const { isDarkMode } = useDarkMode(); // Use the useDarkMode hook
-  const { classrooms} = useClassrooms();
-
-  const classroomIds = classrooms.map(classroom => classroom.id);
 
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+    <div className={`flex h-screen ${isDarkMode ? 'bg-[#2A3B5E]' : 'bg-gray-100'}`}>
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader />
-        <main className={`flex-1 flex overflow-x-hidden overflow-y-auto p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+        <main className={`flex-1 flex flex-col justify-start overflow-x-hidden overflow-y-auto p-6 items-center ${isDarkMode ? 'bg-[#2A3B5E]' : 'bg-gray-200'}`}>
           {isMenuOpen && (
             <Sidebar userType="teacher"/>
           )}
-          <CreateClassroom />
-          <CreateAssignmentModal />
-          <GenerateInvitation classroomIds={classroomIds} />
+          <ClassroomSelector />
         </main>
       </div>
     </div>
