@@ -8,6 +8,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { User } from '../../shared/decorators/user.decorator';
 import { UserResponseDto } from '../user/dto/user-response.dto';
+import { ClassroomDto } from './dto/classroom.dto';
 // import { TestUser } from '../../shared/decorators/user.decorator';
 
 @Controller('classrooms')
@@ -115,16 +116,10 @@ export class ClassroomController {
   @Get('teacher/:teacherId')
   @UseGuards(RolesGuard)
   @Roles('teacher', 'admin')
-  async findByTeacher(@Param('teacherId') teacherId: string, @User() user: any) {
-    // Check if the requesting user is the teacher or an admin
+  async findByTeacher(@Param('teacherId') teacherId: string, @User() user: any): Promise<ClassroomDto[]> {
     if (user.id !== +teacherId && user.role !== 'admin') {
       throw new HttpException('You are not authorized to view these classrooms', HttpStatus.FORBIDDEN);
     }
-
-    const classrooms = await this.classroomService.findByTeacher(+teacherId);
-    if (!classrooms || classrooms.length === 0) {
-      throw new HttpException('No classrooms found for this teacher', HttpStatus.NOT_FOUND);
-    }
-    return classrooms;
+    return this.classroomService.findByTeacher(+teacherId);
   }
 }

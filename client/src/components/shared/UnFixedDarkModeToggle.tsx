@@ -1,10 +1,8 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useDarkMode } from '../../contexts/DarkModeContext'; // Update the import path as needed
-
 export const UnFixedDarkModeToggle: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-
   return (
     <button
       onClick={toggleDarkMode}
@@ -13,7 +11,7 @@ export const UnFixedDarkModeToggle: React.FC = () => {
       {isDarkMode ? (
         <Sun size={24} color="#ffffff" />
       ) : (
-        <Moon size={24} color="#000000" />
+        <Moon size={24} color="#ffffff" />
       )}
     </button>
   );

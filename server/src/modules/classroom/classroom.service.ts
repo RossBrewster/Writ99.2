@@ -4,6 +4,7 @@ import { UserRepository } from '../../database/repositories/User.repository';
 import { Classroom } from '../../database/entities/Classroom.entity';
 import { CreateClassroomDto } from './dto/createClassroom.dto';
 import { UpdateClassroomDto } from './dto/updateClassroom.dto';
+import { ClassroomDto } from './dto/classroom.dto'; 
 
 @Injectable()
 export class ClassroomService {
@@ -52,8 +53,9 @@ export class ClassroomService {
     }
   }
 
-  async findByTeacher(teacherId: number): Promise<Classroom[]> {
-    return this.classroomRepository.findByTeacher(teacherId);
+  async findByTeacher(teacherId: number): Promise<ClassroomDto[]> {
+    const classrooms = await this.classroomRepository.findByTeacher(teacherId);
+    return classrooms.map(ClassroomDto.fromEntity);
   }
 
   async addStudent(classroomId: number, studentId: number): Promise<Classroom> {

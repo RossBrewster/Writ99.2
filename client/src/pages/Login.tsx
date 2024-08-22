@@ -5,7 +5,6 @@ import { useDarkMode } from '../contexts/DarkModeContext'; // Updated import
 import { Logo } from '../components/shared/BlankLogo';
 import { useAuth } from '../contexts/AuthContext';
 import { ButtonData } from '../types/types';
-
 export const LoginPage: React.FC = () => {
   const { isDarkMode } = useDarkMode(); // Updated to use the new context
   const navigate = useNavigate();
@@ -14,11 +13,9 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -27,11 +24,10 @@ export const LoginPage: React.FC = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful', data);
-        login(data.username, data.role, data.token);
+        login(data.username, data.role, data.token, data.id);
         setSuccessMessage('Login successful');
         navigate('/dashboard');
       } else {
@@ -43,7 +39,6 @@ export const LoginPage: React.FC = () => {
       console.error(err);
     }
   };
-
   const inputClasses = `
     appearance-none rounded-none relative block w-full px-3 py-2 border
     ${isDarkMode 
@@ -52,14 +47,12 @@ export const LoginPage: React.FC = () => {
     }
     focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm
   `;
-
   const logoButtons: ButtonData[] = [
     { text: 'Teachers', color: '#EA4335' },
     { text: 'Students', color: '#34A853' },
     { text: 'Sign Up', color: '#FBBC05' },
     { text: 'About Us', color: '#4285F4' },
   ];
-
   return (
     <div className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} font-sans`}>
       <DarkModeToggle /> {/* Updated: removed props */}
@@ -102,14 +95,12 @@ export const LoginPage: React.FC = () => {
                 />
               </div>
             </div>
-
             {error && (
               <div className="text-red-500 text-sm text-center">{error}</div>
             )}
             {successMessage && (
               <div className="text-green-500 text-sm text-center">{successMessage}</div>
             )}
-
             <div>
               <button
                 type="submit"
