@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useClassrooms } from '../contexts/ClassroomContext';
-import { Alert, AlertDescription } from './ui/alert';
+import { useClassrooms } from '../../contexts/ClassroomContext';
+import { Alert, AlertDescription } from '../ui/alert';
 
 export const GenerateInvitation: React.FC = () => {
   const { selectedClassroom } = useClassrooms();
