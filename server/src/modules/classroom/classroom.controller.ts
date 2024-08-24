@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { ClassroomService } from './classroom.service';
 import { UserService } from '../user/user.service';
 import { CreateClassroomDto} from './dto/createClassroom.dto';
@@ -121,5 +121,27 @@ export class ClassroomController {
       throw new HttpException('You are not authorized to view these classrooms', HttpStatus.FORBIDDEN);
     }
     return this.classroomService.findByTeacher(+teacherId);
+  }
+
+  @Get(':id/roster')
+  @UseGuards(RolesGuard)
+  @Roles('teacher', 'admin')
+  async getRosterData(@Param('id') id: string, @User() user: any) {
+    const classroom = await this.classroomService.findOne(+id);
+    if (!classroom) {
+      throw new HttpException('Classroom not found', HttpStatus.NOT_FOUND);
+    }
+    if (classroom.teacherId !== user.id && user.role !== 'admin') {
+      throw new HttpException('You are not authorized to view this classroom\'s roster', HttpStatus.FORBIDDEN);
+    }
+    try {
+      const rosterData = await this.classroomService.getRosterData(+id);
+      return rosterData;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException('An error occurred while fetching the roster data', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

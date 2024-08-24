@@ -5,6 +5,7 @@ import { Classroom } from '../../database/entities/Classroom.entity';
 import { CreateClassroomDto } from './dto/createClassroom.dto';
 import { UpdateClassroomDto } from './dto/updateClassroom.dto';
 import { ClassroomDto } from './dto/classroom.dto'; 
+import { User } from '../../database/entities/User.entity';
 
 @Injectable()
 export class ClassroomService {
@@ -102,6 +103,19 @@ export class ClassroomService {
   private generateUniqueCode(): string {
     // Generate a random 6-digit code
     return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  async getRosterData(classroomId: number): Promise<{
+    classroom: Classroom;
+    teacher: User;
+    students: User[];
+    studentCount: number;
+  }> {
+    const rosterData = await this.classroomRepository.getRosterData(classroomId);
+    if (!rosterData) {
+      throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+    }
+    return rosterData;
   }
   
 }

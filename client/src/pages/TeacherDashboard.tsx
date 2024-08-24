@@ -4,6 +4,7 @@ import { useMenu } from '../contexts/MenuContext';
 import { Sidebar } from '../components/shared/SideBar';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import { ClassroomSelector } from '../components/classroom/ClassroomSelector';
+import { Roster } from "../components/classroom/Roster"
 
 export const TeacherDashboard: React.FC = () => {
   const { isMenuOpen } = useMenu();
@@ -18,6 +19,7 @@ export const TeacherDashboard: React.FC = () => {
             <Sidebar userType="teacher"/>
           )}
           <ClassroomSelector />
+          <Roster />
         </main>
       </div>
     </div>

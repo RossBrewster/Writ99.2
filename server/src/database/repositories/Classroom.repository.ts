@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { Classroom } from '../entities/Classroom.entity';
 import { User } from '../entities/User.entity';
+import { UserRepository } from './User.repository';
 
 @Injectable()
 export class ClassroomRepository {
   constructor(
     @InjectRepository(Classroom)
     private classroomRepository: Repository<Classroom>,
+    private userRepository: UserRepository
   ) {}
 
   async create(classroomData: Partial<Classroom>): Promise<Classroom> {
@@ -106,5 +108,35 @@ export class ClassroomRepository {
       invitationCodeExpiration: null,
     });
     return this.findById(id);
+  }
+
+  async getRosterData(classroomId: number): Promise<{
+    classroom: Classroom;
+    teacher: User;
+    students: User[];
+    studentCount: number;
+  }> {
+    const classroom = await this.classroomRepository.findOne({
+      where: { id: classroomId },
+      relations: ['teacher', 'students'],
+    });
+
+    if (!classroom) {
+      throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+    }
+
+    const teacher = await this.userRepository.findById(classroom.teacherId, ['taughtClassrooms']);
+    const students = await Promise.all(
+      classroom.students.map(student => 
+        this.userRepository.findById(student.id, ['enrolledClassrooms'])
+      )
+    );
+
+    return {
+      classroom,
+      teacher,
+      students,
+      studentCount: students.length,
+    };
   }
 }
