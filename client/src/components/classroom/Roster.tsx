@@ -77,16 +77,16 @@ export const Roster: React.FC = () => {
   }
 
   return (
-    <div className={`w-full max-w-5xl rounded-2xl p-4 mt-4 flex flex-col justify-start shadow-2xl ${isDarkMode ? "bg-[#395286]" : "bg-[#cbd8f4]"}`}>
-      <h2 className="text-2xl font-[Saira] w-full text-left border-b-[#b1c0dc] border-b-2 pl-4 mb-4 pb-2">
+    <div className={`w-full max-w-5xl rounded-2xl p-4 mt-4 flex flex-col justify-start shadow-2xl ${isDarkMode ? "bg-[#395286]" : "bg-[#f3f4f8]"}`}>
+      <h2 className="text-2xl font-[Saira] w-full text-left border-b-[#c2cada] border-b-2 pl-4 mb-4 pb-2">
         {selectedClassroom.name} ({rosterData.studentCount} students)
       </h2>
       <div className="grid grid-cols-3 gap-4">
         {rosterData.students.map((student) => (
           <div
             key={student.id}
-            className={`p-4 rounded flex items-center gap-2 shadow-lg ${
-              isDarkMode ? "bg-[#304269] hover:bg-[#7291d3] hover:text-black" : "bg-[#9cb6ed] hover:bg-[#B5C7ED]"
+            className={`p-4 rounded flex items-center gap-2 shadow-lg cursor-pointer ${
+              isDarkMode ? "bg-[#4b6aaf] hover:bg-[#7291d3] hover:text-black" : "bg-[#fafcfe] hover:bg-[#eff3ff]"
             }`}
           >
             <UserSquare className="shrink-0" />
