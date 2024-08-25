@@ -6,6 +6,7 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import { ClassroomSelector } from '../components/classroom/ClassroomSelector';
 import { Roster } from "../components/classroom/Roster"
 
+
 export const TeacherDashboard: React.FC = () => {
   const { isMenuOpen } = useMenu();
   const { isDarkMode } = useDarkMode(); // Use the useDarkMode hook
@@ -20,6 +21,7 @@ export const TeacherDashboard: React.FC = () => {
           )}
           <ClassroomSelector />
           <Roster />
+
         </main>
       </div>
     </div>

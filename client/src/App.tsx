@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MenuProvider } from './contexts/MenuContext';
 import { DarkModeProvider } from './contexts/DarkModeContext';
 import { ClassroomProvider } from './contexts/ClassroomContext'; // Import the ClassroomProvider
+import { Animator } from "./components/Animator"
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -51,6 +52,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<PrivateRoute><DashboardRoute /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path ="/animate" element={<Animator />} />
           </Routes>
         </Router>
       </DarkModeProvider>
