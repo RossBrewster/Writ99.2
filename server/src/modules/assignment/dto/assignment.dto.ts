@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsDate, IsArray } from "class-validator";
+import { Type } from "class-transformer"
+import { ClassTransformer } from "class-transformer";
 
   export class UpdateAssignmentDto {
     title?: string;
@@ -41,4 +43,28 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator
     @IsNumber()
     @IsNotEmpty()
     createdById: number;
+  
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @IsOptional()
+    classroomIds?: number[];
+  
+    @IsDate()
+    @Type(() => Date)
+    @IsOptional()
+    dueDate?: Date;
   }
+
+  export class AssignToClassroomDto {
+    @IsNumber()
+    assignmentId: number;
+  
+    @IsNumber()
+    classroomId: number;
+  
+    @IsDate()
+    @Type(() => Date)
+    @IsOptional()
+    dueDate?: Date;
+  }
+  

@@ -1,10 +1,10 @@
-import  { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 
 const colors: string[] = ['#EA4335', '#34A853', '#FBBC05', '#4285F4'];
 
@@ -15,6 +15,27 @@ interface Frame {
   paths: Path[];
   enabled: boolean;
 }
+
+const generateSymmetricalFrames = (numFrames: number = 10): Frame[] => {
+  const newFrames: Frame[] = [];
+  for (let i = 0; i < numFrames; i++) {
+    const paths: Path[] = [];
+    for (let j = 0; j < 2; j++) {
+      const x1 = Math.floor(Math.random() * 81) + 10;
+      const y1 = Math.floor(Math.random() * 81) + 10;
+      const x2 = Math.floor(Math.random() * 81) + 10;
+      const y2 = Math.floor(Math.random() * 81) + 10;
+      paths.push([x1, y1, x2, y2]);
+      paths.push([100 - x1, y1, 100 - x2, y2]);
+    }
+    newFrames.push({
+      name: `Symmetrical Frame ${i + 1}`,
+      paths,
+      enabled: true,
+    });
+  }
+  return newFrames;
+};
 
 export const Animator: React.FC = () => {
   const logoRef = useRef<SVGSVGElement>(null);
@@ -33,6 +54,7 @@ export const Animator: React.FC = () => {
   const [duration, setDuration] = useState<number>(600);
   const [easingStrength, setEasingStrength] = useState<number>(1.70158);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [numSymmetricalFrames, setNumSymmetricalFrames] = useState<number>(10);
   const animationRef = useRef<number | null>(null);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -95,11 +117,9 @@ export const Animator: React.FC = () => {
     const paths = logoRef.current.querySelectorAll('path');
     let nextFrame = (currentFrame + 1) % animationFrames.length;
     
-    // Find the next enabled frame
     while (!animationFrames[nextFrame].enabled) {
       nextFrame = (nextFrame + 1) % animationFrames.length;
       if (nextFrame === currentFrame) {
-        // If we've looped back to the current frame, all frames are disabled
         setIsAnimating(false);
         return;
       }
@@ -117,7 +137,7 @@ export const Animator: React.FC = () => {
             if (animationFrames[nextFrame].name === 'W') {
               pauseTimeoutRef.current = setTimeout(() => {
                 setCurrentFrame(nextFrame);
-              }, 250); // 0.25 seconds pause
+              }, 250);
             } else {
               setCurrentFrame(nextFrame);
             }
@@ -177,6 +197,11 @@ export const Animator: React.FC = () => {
     if (currentFrame >= index && currentFrame > 0) {
       setCurrentFrame(currentFrame - 1);
     }
+  };
+
+  const handleGenerateSymmetricalFrames = () => {
+    const newFrames = generateSymmetricalFrames(numSymmetricalFrames);
+    setAnimationFrames(prevFrames => [...prevFrames, ...newFrames]);
   };
 
   const totalMargin = strokeWidth / scaleFactor;
@@ -270,6 +295,18 @@ export const Animator: React.FC = () => {
         <Button onClick={addNewFrame}>Add Frame</Button>
       </div>
       
+      <div className="mb-4">
+        <Label htmlFor="numSymmetricalFrames">Number of Symmetrical Frames</Label>
+        <Input
+          id="numSymmetricalFrames"
+          type="number"
+          value={numSymmetricalFrames}
+          onChange={(e) => setNumSymmetricalFrames(Number(e.target.value))}
+          className="mb-2"
+        />
+        <Button onClick={handleGenerateSymmetricalFrames}>Generate Symmetrical Frames</Button>
+      </div>
+      
       <div>
         <h3 className="text-lg font-semibold mb-2">Animation Frames:</h3>
         {animationFrames.map((frame, index) => (
@@ -283,8 +320,12 @@ export const Animator: React.FC = () => {
                   onCheckedChange={() => toggleFrameEnabled(index)}
                 />
                 <Label htmlFor={`frame-${index}-enabled`}>Enabled</Label>
-                <Button onClick={() => moveFrame(index, -1)} disabled={index === 0}>↑</Button>
-                <Button onClick={() => moveFrame(index, 1)} disabled={index === animationFrames.length - 1}>↓</Button>
+                <Button onClick={() => moveFrame(index, -1)} disabled={index === 0}>
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => moveFrame(index, 1)} disabled={index === animationFrames.length - 1}>
+                  <ArrowDown className="h-4 w-4" />
+                </Button>
                 <Button 
                   onClick={() => deleteFrame(index)}
                   variant="destructive"

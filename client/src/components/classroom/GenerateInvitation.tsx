@@ -39,7 +39,7 @@ export const GenerateInvitation: React.FC = () => {
             <button 
         onClick={generateInvitation}
         disabled={!selectedClassroom}
-        className="px-4 py-2 font-bold text-white bg-[#4284F3] rounded shadow-lg hover:bg-blue-700 focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-md text-white bg-[#4284F3] rounded shadow-lg hover:bg-blue-700 focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         Generate Invitation Code
       </button>

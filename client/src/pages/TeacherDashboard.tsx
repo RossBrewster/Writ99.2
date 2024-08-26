@@ -5,6 +5,7 @@ import { Sidebar } from '../components/shared/SideBar';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import { ClassroomSelector } from '../components/classroom/ClassroomSelector';
 import { Roster } from "../components/classroom/Roster"
+import { ClassroomAssignments } from '../components/Assignments/ClassroomAssignments';
 
 
 export const TeacherDashboard: React.FC = () => {
@@ -21,7 +22,7 @@ export const TeacherDashboard: React.FC = () => {
           )}
           <ClassroomSelector />
           <Roster />
-
+          <ClassroomAssignments />
         </main>
       </div>
     </div>
