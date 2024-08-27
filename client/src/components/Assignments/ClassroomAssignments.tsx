@@ -22,7 +22,6 @@ interface ClassroomAssignment {
 
 export const ClassroomAssignments: React.FC = () => {
   const { selectedClassroom } = useClassrooms();
-  const { role } = useAuth();
   const [assignments, setAssignments] = useState<ClassroomAssignment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,19 +104,10 @@ export const ClassroomAssignments: React.FC = () => {
             <h3 className="font-semibold truncate">{classroomAssignment.assignment.title}</h3>
             <p className="text-sm truncate">{classroomAssignment.assignment.description}</p>
             <p className="text-sm"><strong>Due:</strong> {formatDate(classroomAssignment.dueDate)}</p>
-            {/* {(role === 'teacher' || role === 'admin') && (
-              <Button 
-                variant="destructive" 
-                onClick={() => handleRemoveAssignment(classroomAssignment.id)}
-                className="mt-2 w-full"
-              >
-                Remove
-              </Button>
-            )} */}
           </div>
         ))}
       </div>
-      <div className="w-full flex justify-between mt-4">
+      <div className="w-full flex justify-end gap-4 mt-4">
         <Button onClick={fetchAssignments} className="bg-blue-500 hover:bg-blue-600 text-white text-md">Refresh Assignments</Button>
         <CreateAssignmentModal />
       </div>

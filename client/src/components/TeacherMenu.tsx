@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { X } from 'lucide-react';
 
 interface ButtonData {
   text: string;
@@ -17,7 +16,6 @@ type LogoState = 'hamburger' | 'w';
 
 type Path = [number, number, number, number];
 
-// Increased path coordinates by 20%
 const wPaths: Path[] = [
   [12, 12, 36, 108],
   [36, 108, 60, 12],
@@ -45,6 +43,7 @@ export function TeacherMenu(): JSX.Element {
   const [logoState, setLogoState] = useState<LogoState>('hamburger');
   const [isTextVisible, setIsTextVisible] = useState<boolean>(false);
   const logoRef = useRef<SVGSVGElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const animatePath = useCallback(
     (
@@ -101,6 +100,8 @@ export function TeacherMenu(): JSX.Element {
     setLogoState('hamburger');
   }, []);
 
+  
+
   const handleButtonClick = useCallback((buttonText: string): void => {
     console.log(`Button clicked: ${buttonText}`);
     handleCloseModal();
@@ -116,18 +117,34 @@ export function TeacherMenu(): JSX.Element {
     return () => clearTimeout(timer);
   }, [logoState, animateLogo]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        handleCloseModal();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, handleCloseModal]);
+
   return (
     <div className="relative">
       <button onClick={handleLogoClick} className="p-2 focus:outline-none">
         <svg
           ref={logoRef}
-          className="w-12 h-12" // Increased from w-10 h-10
-          viewBox="-12 -12 144 144" // Increased viewBox by 20%
+          className="w-12 h-12"
+          viewBox="-12 -12 144 144"
           preserveAspectRatio="xMidYMid meet">
           {buttons.map((button, index) => (
             <path
               key={index}
-              strokeWidth="21.6" // Increased from 18
+              strokeWidth="21.6"
               strokeLinecap="round"
               fill="none"
               stroke={button.color}
@@ -137,18 +154,16 @@ export function TeacherMenu(): JSX.Element {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-10 rounded-lg shadow-lg relative"> {/* Increased padding */}
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"> {/* Adjusted positioning */}
-              <X size={29} /> {/* Increased from 24 */}
-            </button>
-            <div className="w-77 h-77 relative"> {/* Increased from w-64 h-64 */}
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50">
+          <div 
+            ref={menuRef}
+            className="absolute top-10 left-0 pl-4 pr-10 py-6"
+          >
+            <div className="w-64 h-64 relative">
               <svg
                 ref={logoRef}
                 className="w-full h-full"
-                viewBox="-12 -12 144 144" // Increased viewBox by 20%
+                viewBox="-12 -12 144 144"
                 preserveAspectRatio="xMidYMid meet">
                 {buttons.map((button, index) => (
                   <g
@@ -156,18 +171,18 @@ export function TeacherMenu(): JSX.Element {
                     className="cursor-pointer"
                     onClick={() => handleButtonClick(button.text)}>
                     <path
-                      strokeWidth="21.6" // Increased from 18
+                      strokeWidth="21.6"
                       strokeLinecap="round"
                       fill="none"
                       stroke={button.color}
                     />
                     <text
-                      x="60" // Increased from 50
-                      y={27 + index * 22.8} // Increased from 22.5 + index * 19
+                      x="60"
+                      y={27 + index * 22.8}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill="#FFFFFF"
-                      fontSize="12" // Increased from 10
+                      fill={(button.color === "#FBBC05") ? "000000" : "#FFFFFF"}
+                      fontSize="12"
                       fontFamily="Arial, sans-serif"
                       className={`${
                         isTextVisible ? 'opacity-100' : 'opacity-0'

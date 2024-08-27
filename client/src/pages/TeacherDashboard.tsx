@@ -13,10 +13,10 @@ export const TeacherDashboard: React.FC = () => {
   const { isDarkMode } = useDarkMode(); // Use the useDarkMode hook
 
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'bg-[#2A3B5E]' : 'bg-gray-100'}`}>
+    <div className={`flex h-screen ${isDarkMode ? 'bg-[#18243b]' : 'bg-gray-100'}`}>
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader />
-        <main className={`flex-1 flex flex-col justify-start overflow-x-hidden overflow-y-auto p-6 items-center ${isDarkMode ? 'bg-[#2A3B5E]' : 'bg-gray-200'}`}>
+        <main className={`flex-1 flex flex-col justify-start overflow-x-hidden overflow-y-auto p-6 items-center ${isDarkMode ? 'bg-[#1f3152]' : 'bg-gray-200'}`}>
           {isMenuOpen && (
             <Sidebar userType="teacher"/>
           )}
