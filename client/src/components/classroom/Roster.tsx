@@ -79,7 +79,7 @@ export const Roster: React.FC = () => {
   return (
     <div className={`w-full max-w-5xl rounded-2xl p-4 mt-4 flex flex-col justify-start shadow-2xl ${isDarkMode ? "bg-[#395286]" : "bg-[#f3f4f8]"}`}>
       <h2 className="text-2xl font-[Saira] w-full text-left border-b-[#c2cada] border-b-2 pl-4 mb-4 pb-2">
-        {selectedClassroom.name} ({rosterData.studentCount} students)
+        Students ({rosterData.studentCount}) - {selectedClassroom.name} 
       </h2>
       <div className="grid grid-cols-3 gap-4">
         {rosterData.students.map((student) => (

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { SideBarLogo } from './SideBarLogo';
 // import { useDarkMode } from '../../contexts/DarkModeContext'; // Update the import path as needed
 import { UnFixedDarkModeToggle } from './UnFixedDarkModeToggle';
+import { TeacherMenu } from '../TeacherMenu';
 
 export const DashboardHeader: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
@@ -13,10 +13,10 @@ export const DashboardHeader: React.FC = () => {
   }
 
   return (
-    <header className={`bg-[#111827] text-white shadow-md transition-colors duration-200`}>
+    <header className={`bg-[#111827] text-white shadow-md transition-colors duration-200 h-20 pt-3`}>
       <div className='flex ml-5 justify-between items-center'>
         <div>
-          <SideBarLogo />
+          <TeacherMenu />
         </div>
         <div className='flex items-center gap-5 mr-8'>
           <h1 className="text-2xl font-bold hidden sm:block mr-8">
