@@ -47,18 +47,6 @@ export const ClassroomAssignments: React.FC = () => {
     }
   };
 
-  const handleRemoveAssignment = async (classroomAssignmentId: number) => {
-    try {
-      await fetchWithAuth(`/api/assignments/classroom-assignment/${classroomAssignmentId}`, {
-        method: 'DELETE',
-      });
-      fetchAssignments();
-    } catch (err) {
-      setError('Failed to remove assignment from classroom');
-      console.error(err);
-    }
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
