@@ -8,17 +8,22 @@ export class ClassroomDto {
   teacherId: number;
   invitationCode: string | null;
   invitationCodeExpiration: Date | null;
-  teacher: UserResponseDto;
+  teacher?: UserResponseDto;  // Make this optional
 
   static fromEntity(classroom: Classroom): ClassroomDto {
-    return {
-      id: classroom.id,
-      name: classroom.name,
-      description: classroom.description,
-      teacherId: classroom.teacherId,
-      invitationCode: classroom.invitationCode,
-      invitationCodeExpiration: classroom.invitationCodeExpiration,
-      teacher: UserResponseDto.fromEntity(classroom.teacher)
-    };
+    const dto = new ClassroomDto();
+    dto.id = classroom.id;
+    dto.name = classroom.name;
+    dto.description = classroom.description;
+    dto.teacherId = classroom.teacherId;
+    dto.invitationCode = classroom.invitationCode;
+    dto.invitationCodeExpiration = classroom.invitationCodeExpiration;
+    
+    // Only set the teacher if it's loaded
+    if (classroom.teacher) {
+      dto.teacher = UserResponseDto.fromEntity(classroom.teacher);
+    }
+    
+    return dto;
   }
 }

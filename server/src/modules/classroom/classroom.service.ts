@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ClassroomRepository } from '../../database/repositories/Classroom.repository';
 import { UserRepository } from '../../database/repositories/User.repository';
 import { Classroom } from '../../database/entities/Classroom.entity';
@@ -31,7 +31,25 @@ export class ClassroomService {
     return this.classroomRepository.findAll();
   }
 
+  async findEnrolledClassrooms(userId: number): Promise<ClassroomDto[]> {
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+  
+    try {
+      const classrooms = await this.classroomRepository.findEnrolledClassroomsByStudent(userId);
+      return classrooms.map(ClassroomDto.fromEntity);
+    } catch (error) {
+      console.error(`Error finding enrolled classrooms for user ${userId}:`, error);
+      throw new InternalServerErrorException('Error fetching enrolled classrooms');
+    }
+  }
+
   async findOne(id: number): Promise<Classroom> {
+    if (isNaN(id)) {
+      throw new BadRequestException('Invalid classroom ID');
+    }
+    
     const classroom = await this.classroomRepository.findById(id);
     if (!classroom) {
       throw new NotFoundException(`Classroom with ID ${id} not found`);
@@ -117,5 +135,6 @@ export class ClassroomService {
     }
     return rosterData;
   }
+  
   
 }

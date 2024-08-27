@@ -23,7 +23,16 @@ export class ClassroomRepository {
   }
 
   async findById(id: number, relations: string[] = []): Promise<Classroom | undefined> {
-    return await this.classroomRepository.findOne({ where: { id }, relations });
+    if (isNaN(id)) {
+      throw new Error('Invalid classroom ID');
+    }
+    
+    try {
+      return await this.classroomRepository.findOne({ where: { id }, relations });
+    } catch (error) {
+      console.error(`Error finding classroom with ID ${id}:`, error);
+      throw error;
+    }
   }
 
   async update(id: number, classroomData: Partial<Classroom>): Promise<Classroom | undefined> {
@@ -138,5 +147,18 @@ export class ClassroomRepository {
       students,
       studentCount: students.length,
     };
+  }
+
+  async findEnrolledClassroomsByStudent(studentId: number): Promise<Classroom[]> {
+    try {
+      return this.classroomRepository
+        .createQueryBuilder('classroom')
+        .innerJoin('classroom.students', 'student')
+        .where('student.id = :studentId', { studentId })
+        .getMany();
+    } catch (error) {
+      console.error(`Error finding enrolled classrooms for student ${studentId}:`, error);
+      throw error;
+    }
   }
 }

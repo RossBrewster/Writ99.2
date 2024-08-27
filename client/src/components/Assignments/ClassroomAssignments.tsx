@@ -3,7 +3,6 @@ import { useClassrooms, fetchWithAuth } from '../../contexts/ClassroomContext';
 import { AlertCircle, Book } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from "../ui/button"
-import { useAuth } from '../../contexts/AuthContext';
 import { CreateAssignmentModal } from './CreateAssignment';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 
