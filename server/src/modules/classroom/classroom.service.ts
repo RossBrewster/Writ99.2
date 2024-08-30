@@ -6,6 +6,7 @@ import { CreateClassroomDto } from './dto/createClassroom.dto';
 import { UpdateClassroomDto } from './dto/updateClassroom.dto';
 import { ClassroomDto } from './dto/classroom.dto'; 
 import { User } from '../../database/entities/User.entity';
+import { RosterDataDto } from './dto/rosterData.dto';
 
 @Injectable()
 export class ClassroomService {
@@ -123,17 +124,19 @@ export class ClassroomService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  async getRosterData(classroomId: number): Promise<{
-    classroom: Classroom;
-    teacher: User;
-    students: User[];
-    studentCount: number;
-  }> {
-    const rosterData = await this.classroomRepository.getRosterData(classroomId);
-    if (!rosterData) {
-      throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+  async getRosterData(classroomId: number): Promise<RosterDataDto> {
+    try {
+      const rosterData = await this.classroomRepository.getRosterData(classroomId);
+      if (!rosterData) {
+        throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+      }
+      return RosterDataDto.fromEntity(rosterData);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error fetching roster data');
     }
-    return rosterData;
   }
   
   

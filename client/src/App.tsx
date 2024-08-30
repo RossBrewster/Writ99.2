@@ -12,6 +12,7 @@ import { ClassroomProvider } from './contexts/ClassroomContext';
 import { EnrollmentsProvider } from './contexts/EnrollmentsContext'; // Import the EnrollmentsProvider
 import { Animator } from "./components/Animator"
 import { ChatInterface } from './components/ChatInterface';
+import { Notes } from './components/Notes';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -58,6 +59,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
             <Route path="/animate" element={<Animator />} />
             <Route path="/chat" element={<ChatInterface />} />
+            <Route path="/notes" element={<Notes />} />
           </Routes>
         </Router>
       </DarkModeProvider>

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DarkModeToggle } from '../components/shared/DarkModeToggle';
-import { useDarkMode } from '../contexts/DarkModeContext'; // Updated import
+import { useDarkMode } from '../contexts/DarkModeContext';
 import { Logo } from '../components/shared/BlankLogo';
 import { useAuth } from '../contexts/AuthContext';
 import { ButtonData } from '../types/types';
+
 export const LoginPage: React.FC = () => {
-  const { isDarkMode } = useDarkMode(); // Updated to use the new context
+  const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -39,6 +41,7 @@ export const LoginPage: React.FC = () => {
       console.error(err);
     }
   };
+
   const inputClasses = `
     appearance-none rounded-none relative block w-full px-3 py-2 border
     ${isDarkMode 
@@ -47,21 +50,25 @@ export const LoginPage: React.FC = () => {
     }
     focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm
   `;
+
   const logoButtons: ButtonData[] = [
     { text: 'Teachers', color: '#EA4335' },
     { text: 'Students', color: '#34A853' },
     { text: 'Sign Up', color: '#FBBC05' },
     { text: 'About Us', color: '#4285F4' },
   ];
+
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} font-sans`}>
-      <DarkModeToggle /> {/* Updated: removed props */}
-      <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+    <div className={`min-h-screen w-full flex flex-col items-center justify-center py-6 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} font-sans`}>
+      <div className="absolute top-4 right-4">
+        <DarkModeToggle />
+      </div>
+      <div className="w-full max-w-md mx-auto flex flex-col items-center">
         <div className="w-full flex justify-center mb-8">
           <Logo buttons={logoButtons}/>
         </div>
-        <div className="w-full max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold">
+        <div className="w-full">
+          <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold">
             Sign in to your account
           </h2>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

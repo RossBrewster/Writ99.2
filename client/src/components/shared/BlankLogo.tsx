@@ -85,7 +85,7 @@ export const Logo: React.FC<LogoProps> = ({ buttons }) => {
   };
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="flex items-center justify-center m-20">
       <animated.div style={{ scale }}>
         <svg
           ref={logoRef}
