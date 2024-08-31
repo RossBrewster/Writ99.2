@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, HttpException, HttpStatus, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { ClassroomService } from './classroom.service';
 import { UserService } from '../user/user.service';
 import { CreateClassroomDto} from './dto/createClassroom.dto';
@@ -9,6 +9,7 @@ import { Roles } from '../auth/roles.decorator';
 import { User } from '../../shared/decorators/user.decorator';
 import { UserResponseDto } from '../user/dto/user-response.dto';
 import { ClassroomDto } from './dto/classroom.dto';
+import { RosterDataDto } from './dto/rosterData.dto';
 // import { TestUser } from '../../shared/decorators/user.decorator';
 
 @Controller('classrooms')
@@ -34,15 +35,44 @@ export class ClassroomController {
     return await this.classroomService.findAll();
   }
 
+  @Get('enrolled')
+  @UseGuards(RolesGuard)
+  @Roles('student')
+  async getEnrolledClassrooms(@User() user: any) {
+    if (!user || !user.id) {
+      throw new HttpException('User not authenticated or invalid user data', HttpStatus.UNAUTHORIZED);
+    }
+    
+    try {
+      const enrolledClassrooms = await this.classroomService.findEnrolledClassrooms(user.id);
+      return enrolledClassrooms;
+    } catch (error) {
+      console.error('Error fetching enrolled classrooms:', error);
+      throw new HttpException('Error fetching enrolled classrooms', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get(':id')
   @UseGuards(RolesGuard)
   @Roles('teacher', 'admin', 'student')
   async findOne(@Param('id') id: string) {
-    const classroom = await this.classroomService.findOne(+id);
-    if (!classroom) {
-      throw new HttpException('Classroom not found', HttpStatus.NOT_FOUND);
+    const classroomId = parseInt(id, 10);
+    if (isNaN(classroomId)) {
+      throw new HttpException('Invalid classroom ID', HttpStatus.BAD_REQUEST);
     }
-    return classroom;
+    
+    try {
+      const classroom = await this.classroomService.findOne(classroomId);
+      if (!classroom) {
+        throw new NotFoundException('Classroom not found');
+      }
+      return classroom;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error fetching classroom');
+    }
   }
 
   @Put(':id')
@@ -126,22 +156,29 @@ export class ClassroomController {
   @Get(':id/roster')
   @UseGuards(RolesGuard)
   @Roles('teacher', 'admin')
-  async getRosterData(@Param('id') id: string, @User() user: any) {
-    const classroom = await this.classroomService.findOne(+id);
-    if (!classroom) {
-      throw new HttpException('Classroom not found', HttpStatus.NOT_FOUND);
+  async getRosterData(@Param('id') id: string, @User() user: any): Promise<RosterDataDto> {
+    const classroomId = parseInt(id, 10);
+    if (isNaN(classroomId)) {
+      throw new HttpException('Invalid classroom ID', HttpStatus.BAD_REQUEST);
     }
-    if (classroom.teacherId !== user.id && user.role !== 'admin') {
-      throw new HttpException('You are not authorized to view this classroom\'s roster', HttpStatus.FORBIDDEN);
-    }
+
     try {
-      const rosterData = await this.classroomService.getRosterData(+id);
+      const rosterData = await this.classroomService.getRosterData(classroomId);
+      
+      // Check if the user is authorized to view this classroom's roster
+      if (rosterData.classroom.teacherId !== user.id && user.role !== 'admin') {
+        throw new HttpException('You are not authorized to view this classroom\'s roster', HttpStatus.FORBIDDEN);
+      }
+
       return rosterData;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      if (error instanceof HttpException) {
+        throw error;
       }
       throw new HttpException('An error occurred while fetching the roster data', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  
+  
 }

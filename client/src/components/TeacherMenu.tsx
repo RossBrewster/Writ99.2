@@ -154,12 +154,12 @@ export function TeacherMenu(): JSX.Element {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 w-full h-full">
           <div 
             ref={menuRef}
-            className="absolute top-10 left-0 pl-4 pr-10 py-6"
+            className="absolute -top-10 left-0 right-0 w-full sm:w-80 md:w-80 lg:w-96"
           >
-            <div className="w-64 h-64 relative">
+            <div className=" relative">
               <svg
                 ref={logoRef}
                 className="w-full h-full"

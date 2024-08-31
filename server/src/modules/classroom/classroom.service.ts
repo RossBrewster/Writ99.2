@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ClassroomRepository } from '../../database/repositories/Classroom.repository';
 import { UserRepository } from '../../database/repositories/User.repository';
 import { Classroom } from '../../database/entities/Classroom.entity';
@@ -6,6 +6,7 @@ import { CreateClassroomDto } from './dto/createClassroom.dto';
 import { UpdateClassroomDto } from './dto/updateClassroom.dto';
 import { ClassroomDto } from './dto/classroom.dto'; 
 import { User } from '../../database/entities/User.entity';
+import { RosterDataDto } from './dto/rosterData.dto';
 
 @Injectable()
 export class ClassroomService {
@@ -31,7 +32,25 @@ export class ClassroomService {
     return this.classroomRepository.findAll();
   }
 
+  async findEnrolledClassrooms(userId: number): Promise<ClassroomDto[]> {
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+  
+    try {
+      const classrooms = await this.classroomRepository.findEnrolledClassroomsByStudent(userId);
+      return classrooms.map(ClassroomDto.fromEntity);
+    } catch (error) {
+      console.error(`Error finding enrolled classrooms for user ${userId}:`, error);
+      throw new InternalServerErrorException('Error fetching enrolled classrooms');
+    }
+  }
+
   async findOne(id: number): Promise<Classroom> {
+    if (isNaN(id)) {
+      throw new BadRequestException('Invalid classroom ID');
+    }
+    
     const classroom = await this.classroomRepository.findById(id);
     if (!classroom) {
       throw new NotFoundException(`Classroom with ID ${id} not found`);
@@ -105,17 +124,20 @@ export class ClassroomService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  async getRosterData(classroomId: number): Promise<{
-    classroom: Classroom;
-    teacher: User;
-    students: User[];
-    studentCount: number;
-  }> {
-    const rosterData = await this.classroomRepository.getRosterData(classroomId);
-    if (!rosterData) {
-      throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+  async getRosterData(classroomId: number): Promise<RosterDataDto> {
+    try {
+      const rosterData = await this.classroomRepository.getRosterData(classroomId);
+      if (!rosterData) {
+        throw new NotFoundException(`Classroom with ID ${classroomId} not found`);
+      }
+      return RosterDataDto.fromEntity(rosterData);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error fetching roster data');
     }
-    return rosterData;
   }
+  
   
 }
