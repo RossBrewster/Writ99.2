@@ -251,8 +251,9 @@ const HighlightText: React.FC<HighlightTextProps> = ({
   }, []);
 
   return (
-    <div className="p-4 max-w-xl mx-auto mt-8">
-      <div className="mb-2 flex items-center flex-wrap">
+    <div className="p-4 max-w-xl mx-auto">
+      <div className="mb-4 flex items-center flex-wrap">
+        <span className="mr-2 mb-2">Select highlight color:</span>
         {colorOptions.map((c) => (
           <button
             key={c}
@@ -279,6 +280,12 @@ const HighlightText: React.FC<HighlightTextProps> = ({
           >
             Cancel Selection
           </button>
+        </div>
+      )}
+      {error && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
         </div>
       )}
       <Accordion type="single" collapsible className="mb-4">
