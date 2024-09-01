@@ -158,10 +158,10 @@ export const CreateAssignmentModal = () => {
                 <FormItem>
                   <FormLabel>Reading Material (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="URL or description of reading material" {...field} className={cn(
-                      "w-full",
-                      isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
-                    )} />
+                    <Textarea placeholder="Passage or Reading Material" {...field} className={cn(
+                        "w-full min-h-[100px]",
+                        isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
+                      )} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -284,7 +284,7 @@ export const CreateAssignmentModal = () => {
               type="submit" 
               className={cn(
                 "w-full md:w-auto",
-                isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
+                isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'
               )}
             >
               Create Assignment
