@@ -1,1 +1,1 @@
-web: PORT=8081 npm run start:prod
+web: npm install && npm run install && npm run build && npm run start:prod
