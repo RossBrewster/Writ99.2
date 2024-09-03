@@ -33,6 +33,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(configService.get('PORT', 3001));
+  await app.listen(configService.get('PORT', 8080));
 }
 bootstrap();
