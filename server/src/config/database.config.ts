@@ -1,23 +1,28 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from "../database/entities/User.entity";
-import { RubricTemplate } from "../database/entities/RubricTemplate.entity";
-import { RubricCriteria } from "../database/entities/RubricCriteria.entity";
-import { RubricVersion } from "../database/entities/RubricVersion.entity";
-import { Assignment } from "../database/entities/Assignment.entity";
-import { Classroom } from "../database/entities/Classroom.entity";
-import { CriteriaExample } from 'src/database/entities/CriteriaExample.entity';
-import { Feedback } from 'src/database/entities/Feedback.entity';
-import { StudentSubmission } from 'src/database/entities/StudentSubmission.entity';
+import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
+import * as path from 'path';
 
+export const createDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+  const isProduction = configService.get('NODE_ENV') === 'production';
 
-export const databaseConfig: TypeOrmModuleOptions = {
-  type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'rossbrewster',
-  password: '',
-  database: 'writ99',
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  synchronize: false,
-  logging: true,
+  return {
+    type: 'postgres',
+    host: configService.get('DB_HOST', 'localhost'),
+    port: configService.get('DB_PORT', 5432),
+    username: configService.get('DB_USERNAME', 'rossbrewster'),
+    password: configService.get('DB_PASSWORD', ''),
+    database: configService.get('DB_NAME', 'writ99'),
+    entities: [path.join(__dirname, '..', '**', '*.entity.{ts,js}')],
+    migrations: [path.join(__dirname, '..', 'database', 'migrations', '*{.ts,.js}')],
+    migrationsRun: configService.get('DB_MIGRATIONS_RUN', true),
+    synchronize: configService.get('DB_SYNCHRONIZE', false),
+    logging: configService.get('DB_LOGGING', false),
+    ssl: isProduction ? {
+      rejectUnauthorized: false
+    } : false
+  };
 };
+
+const configService = new ConfigService();
+export default new DataSource(createDatabaseConfig(configService) as any);

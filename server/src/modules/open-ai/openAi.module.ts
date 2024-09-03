@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { OpenAiController } from './openai.controller';
-import { OpenAiService } from './openai.service';
+import { OpenAiController } from './openAi.controller';
+import { OpenAiService } from './openAi.service';
 
 @Module({
   controllers: [OpenAiController],
