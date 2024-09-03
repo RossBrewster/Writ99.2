@@ -35,11 +35,11 @@ jobs:
         cd ../server && npm ci
 
     - name: Generate deployment package
-        run: |
-          NODE_ENV=production npm install
-          npm run build
-          zip -r deploy.zip .platform client/dist server database package.json package-lock.json \
-            -x "*/.env*" "*/node_modules/*"
+      run: |
+        NODE_ENV=production npm install
+        npm run build
+        zip -r deploy.zip .platform client/dist server database package.json package-lock.json \
+          -x "*/.env*" "*/node_modules/*"
 
    - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
