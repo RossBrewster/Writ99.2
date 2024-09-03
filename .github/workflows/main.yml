@@ -10,23 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Fetch all history for all branches and tags
 
     - name: Setup Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: '20'  # Using Node.js 20 to match the EB environment
 
     - name: Cache node modules
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v3
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-        upload-chunk-size: 100000000  # 100MB chunk size for faster uploads
 
     - name: Install dependencies
       run: |
@@ -41,7 +40,7 @@ jobs:
         zip -r deploy.zip .platform client/dist server database package.json package-lock.json \
           -x "*/.env*" "*/node_modules/*"
 
-   - name: Deploy to EB
+    - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
