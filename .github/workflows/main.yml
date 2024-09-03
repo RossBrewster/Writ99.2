@@ -34,12 +34,12 @@ jobs:
         cd client && npm ci
         cd ../server && npm ci
 
-    - name: Build application
-      run: npm run build
-
-    - name: Create deployment package
-      run: |
-        zip -r deploy.zip . -x "*.git*" "node_modules/*" "client/node_modules/*" "server/node_modules/*" "client/src/*" "server/src/*"
+    - name: Generate deployment package
+        run: |
+          NODE_ENV=production npm install
+          npm run build
+          zip -r deploy.zip .platform client/dist server database package.json package-lock.json \
+            -x "*/.env*" "*/node_modules/*"
 
    - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
