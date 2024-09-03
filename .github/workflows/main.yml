@@ -41,7 +41,7 @@ jobs:
       run: |
         zip -r deploy.zip . -x "*.git*" "node_modules/*" "client/node_modules/*" "server/node_modules/*" "client/src/*" "server/src/*"
 
-    - name: Deploy to EB
+   - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -51,6 +51,6 @@ jobs:
         version_label: ${{ github.sha }}
         region: ${{ secrets.AWS_REGION }}
         deployment_package: deploy.zip
-        use_existing_version_if_available: false
+        use_existing_version_if_available: true
         wait_for_deployment: true
         wait_for_environment_recovery: 60
