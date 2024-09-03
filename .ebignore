@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But include these files and directories
+!package.json
+!server/**
+!.ebextensions/**
+
+# Exclude node_modules everywhere
+**/node_modules

@@ -8,26 +8,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        fetch-depth: 0
+        node-version: '20'
 
-    - name: Generate deployment package
-      run: |
-        zip -r deploy.zip . -x "*/node_modules/*" "*/dist/*" "*/build/*" "*/coverage/*" "*.git*"
+    - name: Install dependencies
+      run: npm run install:all
 
-    - name: Deploy to EB
+    - name: Build application
+      run: npm run build
+      env:
+        CI: false  # This prevents treating warnings as errors in create-react-app builds
+
+    - name: Create deployment package
+      run: npm run package
+
+    - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: ${{ secrets.EB_APPLICATION_NAME }}
-        environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
+        application_name: Writ99.2
+        environment_name: Writ992-env
         version_label: ${{ github.sha }}
-        region: ${{ secrets.AWS_REGION }}
-        deployment_package: deploy.zip
-        use_existing_version_if_available: true
-        wait_for_deployment: true
-        wait_for_environment_recovery: 60
+        region: us-west-1
+        deployment_package: deploy.tar.gz
