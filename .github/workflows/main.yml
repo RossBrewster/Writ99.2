@@ -34,15 +34,8 @@ jobs:
         cd client && npm ci
         cd ../server && npm ci
 
-    - name: Build client
-      run: |
-        cd client
-        npm run build
-
-    - name: Build server
-      run: |
-        cd server
-        npm run build
+    - name: Build application
+      run: npm run build
 
     - name: Create deployment package
       run: |
